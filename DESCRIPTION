@@ -1,20 +1,23 @@
 Package: biseriatedheatmaps
 Title: BSH
 Version: 0.0.0.9000
-Authors@R: person('Noe', 'Demange', email = 'demange.noe@outlook.fr', role = c('cre', 'aut'))
+Authors@R: 
+    person("Noe", "Demange", , "demange.noe@outlook.fr", role = c("cre", "aut"))
 Description: PKG_DESC.
 License: MIT + file LICENSE
+URL: https://github.com/NoeDemange/biseriatedheatmaps
+BugReports: https://github.com/NoeDemange/biseriatedheatmaps/issues
 Imports: 
     config (>= 0.3.1),
     golem (>= 0.3.5),
     shiny (>= 1.7.3)
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.2.2
-URL: https://github.com/NoeDemange/biseriatedheatmaps
-BugReports: https://github.com/NoeDemange/biseriatedheatmaps/issues
 Suggests: 
     spelling,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Encoding: UTF-8
 Language: en-US
+LazyData: true
+RoxygenNote: 7.2.2
+Depends: 
+    R (>= 2.10)
