@@ -10,27 +10,28 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    ui <- shinydashboard::dashboardPage(skin = "black",
-                        dashboardHeader(title = "labelcolor"),
+    ui <- shinydashboard::dashboardPage(skin = "purple",
+                        dashboardHeader(title = "BSH"),
                         dashboardSidebar(
                           sidebarMenu(
                             menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
-                            menuItem("Plot", tabName = "plot", icon = icon("fas fa-tree")),
+                            menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-area-chart")),
                             style = "font-size:20px"
-                          ),
-                          br(),
-                          br(),
-                          br(),
-                          br(),
-                          br(),
-                          br(),
-                          br(),
-                          br(),
-                          column(12,
-                                 downloadButton(outputId = "down", label = "Download the plot", style="color:#000000; display: block"),
-                                 textInput("fname", "Nom du fichier", value = "Plot"),
-                                 radioButtons("ext","Type de fichier", c("png","pdf"), selected = "pdf", inline = TRUE)
                           )
+                          # ,
+                          # br(),
+                          # br(),
+                          # br(),
+                          # br(),
+                          # br(),
+                          # br(),
+                          # br(),
+                          # br(),
+                          # column(12,
+                          #        downloadButton(outputId = "down", label = "Download the plot", style="color:#000000; display: block"),
+                          #        textInput("fname", "Nom du fichier", value = "Plot"),
+                          #        radioButtons("ext","Type de fichier", c("png","pdf"), selected = "pdf", inline = TRUE)
+                          # )
                         ),
                         dashboardBody(
                           fluidRow(
@@ -38,7 +39,7 @@ app_ui <- function(request) {
                               tabItem(tabName="dataset",
                                      # mod_data_loading_ui("data_loading_1")
                               ),
-                              tabItem(tabName= "plot",
+                              tabItem(tabName= "ht_simp",
                                      # mod_phylo_ui("phylo_1")
 
                               )
