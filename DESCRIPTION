@@ -10,7 +10,9 @@ BugReports: https://github.com/NoeDemange/biseriatedheatmaps/issues
 Imports: 
     config (>= 0.3.1),
     golem (>= 0.3.5),
-    shiny (>= 1.7.3)
+    shiny (>= 1.7.3),
+    shinycustomloader,
+    shinydashboard
 Suggests: 
     spelling,
     testthat (>= 3.0.0)

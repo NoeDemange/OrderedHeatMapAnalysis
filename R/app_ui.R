@@ -3,16 +3,51 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @import shinydashboard
 #' @noRd
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
-      h1("biseriatedheatmaps")
+    ui <- shinydashboard::dashboardPage(skin = "black",
+                        dashboardHeader(title = "labelcolor"),
+                        dashboardSidebar(
+                          sidebarMenu(
+                            menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
+                            menuItem("Plot", tabName = "plot", icon = icon("fas fa-tree")),
+                            style = "font-size:20px"
+                          ),
+                          br(),
+                          br(),
+                          br(),
+                          br(),
+                          br(),
+                          br(),
+                          br(),
+                          br(),
+                          column(12,
+                                 downloadButton(outputId = "down", label = "Download the plot", style="color:#000000; display: block"),
+                                 textInput("fname", "Nom du fichier", value = "Plot"),
+                                 radioButtons("ext","Type de fichier", c("png","pdf"), selected = "pdf", inline = TRUE)
+                          )
+                        ),
+                        dashboardBody(
+                          fluidRow(
+                            tabItems(
+                              tabItem(tabName="dataset",
+                                     # mod_data_loading_ui("data_loading_1")
+                              ),
+                              tabItem(tabName= "plot",
+                                     # mod_phylo_ui("phylo_1")
+
+                              )
+                            )
+                          )
+                        )
+
+      )
     )
-  )
 }
 
 #' Add external Resources to the Application
