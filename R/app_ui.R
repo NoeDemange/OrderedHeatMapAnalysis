@@ -15,8 +15,10 @@ app_ui <- function(request) {
                         dashboardSidebar(
                           sidebarMenu(
                             menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
-                            menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-area-chart")),
-                            style = "font-size:20px"
+                            menuItem("Data Processing", tabName = "tdon", icon = icon("fas fa-table")),
+                            menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
+                            menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
+                            style = "font-size:18px"
                           )
                           # ,
                           # br(),
@@ -37,7 +39,7 @@ app_ui <- function(request) {
                           fluidRow(
                             tabItems(
                               tabItem(tabName="dataset",
-                                     # mod_data_loading_ui("data_loading_1")
+                                     mod_data_loading_ui("data_loading_1")
                               ),
                               tabItem(tabName= "ht_simp",
                                      # mod_phylo_ui("phylo_1")
