@@ -41,6 +41,9 @@ app_ui <- function(request) {
                               tabItem(tabName="dataset",
                                      mod_data_loading_ui("data_loading_1")
                               ),
+                              tabItem(tabName="tdon",
+                                      mod_data_processing_ui("data_processing_1")
+                              ),
                               tabItem(tabName= "ht_simp",
                                      # mod_phylo_ui("phylo_1")
 

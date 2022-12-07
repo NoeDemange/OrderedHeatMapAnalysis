@@ -18,12 +18,13 @@ mod_data_loading_ui <- function(id) {
           ),
           radioButtons(ns("data"),"",choices = c(
             "demo (Folds/Species)",
-            "Dataset binaire (.csv)",
-            "Matrice de distance (.rds)"),
-            selected = "demo",inline = TRUE),
+            "Your Dataset (.csv)",
+            "Matrice de distance (.rds)"  #voir à supprimer cette ligne (pas utile trop complexe)
+            ),
+            selected = "demo (Folds/Species)",inline = TRUE),
           br(),
-          fileInput(ns("file"), "Importer", accept = c(".csv", ".rds")),
-          radioButtons(ns("sep"),"csv separateur",choices = c(Comma = ",",Semicolon = ";",Tab = "\t"),
+          fileInput(ns("file"), "Import", accept = c(".csv", ".rds")),
+          radioButtons(ns("sep"),"csv separator",choices = c(Comma = ",",Semicolon = ";",Tab = "\t"),
                        selected = ","),
           actionButton(ns("val"), "valider"),
           width = 12
@@ -44,7 +45,7 @@ mod_data_loading_server <- function(id,r=r) {
       if(input$data == "demo (Folds/Species)"){
         datf <- biseriatedheatmaps::my_dataset
         return(datf)
-      }else if(input$data == "Dataset binaire (.csv)"){
+      }else if(input$data == "Your Dataset (.csv)"){
         req(input$file)
         if(tools::file_ext(input$file$name)=="csv"){
           datf <- utils::read.csv(input$file$datapath,
