@@ -17,30 +17,28 @@ mod_data_processing_ui <- function(id){
             "Numerical"),
             selected = "Binary",inline = TRUE),
 #Ajout mise à jour pour afficher choix pour donner binaire ou donner numérique, voir mastering shiny 10.2.1 Conditional UI
-          parameter_tabs,
+#Tabs pour afficher mode binary ou mode numerical
+          parameter_tabs <- tabsetPanel(
+            id = ns("params"),
+            type = "hidden",
+            tabPanel("Binary",
+                     numericInput("mean", "mean", value = 1),
+                     numericInput("sd", "standard deviation", min = 0, value = 1)
+            ),
+            tabPanel("Numerical",
+                     numericInput("min", "min", value = 0),
+                     numericInput("max", "max", value = 1)
+            )
+          ),
       )
     )
   )
 }
 
-#Tabs pour afficher mode binary ou mode numerical
-parameter_tabs <- tabsetPanel(
-  id = "params",
-  type = "hidden",
-  tabPanel("Binary",
-           numericInput("mean", "mean", value = 1),
-           numericInput("sd", "standard deviation", min = 0, value = 1)
-  ),
-  tabPanel("Numerical",
-           numericInput("min", "min", value = 0),
-           numericInput("max", "max", value = 1)
-  )
-)
-
 #' data_processing Server Functions
 #'
 #' @noRd
-mod_data_processing_server <- function(id){
+mod_data_processing_server <- function(id, r=r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
