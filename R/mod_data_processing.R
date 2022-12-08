@@ -65,9 +65,21 @@ mod_data_processing_server <- function(id, r=r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    #faire un bloc dans r pour les donnees de cette partie afin de savoir plus facilement dans les autres modules d'ou les donnees viennent
+
     observeEvent(input$typ_data, {
       updateTabsetPanel(inputId = "params", selected = input$typ_data)
     })
+
+    #mettre les donnees apres filtrage, filtrage en fonction bianire ou non
+    r$fil_df <- reactive(
+
+
+      # datamat <- datamat[rowSums(datamat)>n,]
+      # datamat <- datamat[rowSums(datamat)<ncol(datamat)-n,]
+
+
+    )
 
 
 
