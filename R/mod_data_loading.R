@@ -13,7 +13,7 @@ mod_data_loading_ui <- function(id) {
     fluidPage(
       box(title = "Data",status = "primary",solidHeader = TRUE,
           helpText(
-            "Choisissez si vous voulez utiliser le dataset demo,ou importer votre dataset (format .csv avce Header et nom des lignes en premiere colonne).
+            "Choisissez si vous voulez utiliser le dataset demo ou importer votre dataset (format .csv avce Header et nom des lignes en premiere colonne).
             Puis appuyez sur valider"
           ),
           radioButtons(ns("data"),"",choices = c(

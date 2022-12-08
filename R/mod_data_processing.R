@@ -12,7 +12,8 @@ mod_data_processing_ui <- function(id){
   tagList(
     fluidPage(
       box(title = "Data Processing",status = "primary",solidHeader = TRUE,
-          radioButtons(ns("typ_data"),"Data type",choices = c( #Ajouter des informations d'aides explications
+          helpText(h3("Data type")),
+          radioButtons(ns("typ_data"),"",choices = c( #Ajouter des informations d'aides explications
             "Binary",
             "Numerical"),
             selected = "Binary",inline = TRUE),
@@ -22,14 +23,36 @@ mod_data_processing_ui <- function(id){
             id = ns("params"),
             type = "hidden",
             tabPanel("Binary",
-                     numericInput("mean", "mean", value = 1),
-                     numericInput("sd", "standard deviation", min = 0, value = 1)
+                     helpText(h3("Filtering")),
+                     helpText("Enter for rows and columns the maximum number of ones (max)
+                              and the minimum number of ones (min).
+                              If you do not want to make any changes, enter zero."),
+                     column(6,
+                            helpText(h5("Line")),
+                            numericInput(ns("fl_min"), "min", value = 0),
+                            numericInput(ns("fl_max"), "max", value = 0)
+                     ),
+                     column(6,
+                            helpText(h5("Column")),
+                            numericInput(ns("fc_min"), "min", value = 0),
+                            numericInput(ns("fc_max"), "max", value = 0)
+                     ),
+                     helpText(h3("Distance calculation")),
             ),
             tabPanel("Numerical",
-                     numericInput("min", "min", value = 0),
-                     numericInput("max", "max", value = 1)
+                     helpText("En Création"),
+                     # numericInput("min", "min", value = 0),
+                     # numericInput("max", "max", value = 1)
             )
           ),
+        helpText(h3("Hierarchical clustering")),
+        selectInput(ns('inHC'),"Clustering hierarchique", c("ward.D","ward.D2",
+                                                            "single","complete",
+                                                            "average","mcquitty",
+                                                            "median","centroid","diana")),
+        helpText(h3("Seriation")),
+        radioButtons(ns('ser'),"Seriation", choices = c("Oui","Non"), selected="Oui", inline = TRUE),
+        width = 12
       )
     )
   )
