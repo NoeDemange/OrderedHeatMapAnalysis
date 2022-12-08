@@ -14,6 +14,6 @@ A data frame with 1072 rows and 210 variables
 my_dataset
 }
 \description{
-Jeu de donnees biologique.
+biological dataset.
 }
 \keyword{datasets}
