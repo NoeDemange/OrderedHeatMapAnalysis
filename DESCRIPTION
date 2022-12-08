@@ -12,7 +12,8 @@ Imports:
     golem (>= 0.3.5),
     shiny (>= 1.7.3),
     shinycustomloader,
-    shinydashboard
+    shinydashboard,
+    shinyFeedback
 Suggests: 
     spelling,
     testthat (>= 3.0.0)

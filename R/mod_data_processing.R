@@ -38,11 +38,20 @@ mod_data_processing_ui <- function(id){
                             numericInput(ns("fc_max"), "max", value = 0)
                      ),
                      helpText(h3("Distance calculation")),
+                     helpText("See method of ade4::dist.binary"),
+                     selectInput(ns('inDist'),"Distance",
+                                 c("S2 coefficient of Gower & Legendre", "S3 Jaccard index","S4 Simple matching coefficient of Sokal & Michener",
+                                  "S5 Sokal & Sneath","S6 Rogers & Tanimoto",
+                                  "S7 Dice or Sorensen","S9 Hamann coefficient",
+                                  "S12 Ochiai", "S13 Sokal & Sneath", "S14 Phi of Pearson"),
+                                 selected = "S12 Ochiai")
             ),
             tabPanel("Numerical",
-                     helpText("En Création"),
-                     # numericInput("min", "min", value = 0),
-                     # numericInput("max", "max", value = 1)
+                     helpText("En Creation"),
+                     # helpText(h3("Distance calculation")),
+                     # selectInput(ns('inDist'),"Distance", c("euclidean","maximum",
+                     #                                        "manhattan","canberra",
+                     #                                        "binary","minkowski"), selected = "binary"),
             )
           ),
         helpText(h3("Hierarchical clustering")),
@@ -64,22 +73,55 @@ mod_data_processing_ui <- function(id){
 mod_data_processing_server <- function(id, r=r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-
-    #faire un bloc dans r pour les donnees de cette partie afin de savoir plus facilement dans les autres modules d'ou les donnees viennent
-
     observeEvent(input$typ_data, {
       updateTabsetPanel(inputId = "params", selected = input$typ_data)
     })
 
     #mettre les donnees apres filtrage, filtrage en fonction bianire ou non
-    r$fil_df <- reactive(
+    r$fil_df <- reactive({
+      if(typ_data == "Binary"){
+          datamat <- r$df()
+          datamat <- datamat[rowSums(datamat)>=input$fl_min,]
+          if(input$fl_max!=0){
+            datamat <- datamat[rowSums(datamat)<=input$flmax,]
+          }
+          datamat <- datamat[,colSums(datamat)>=input$fc_min]
+          if(input$fc_max!=0){
+            datamat <- datamat[,colSums(datamat)>=input$fc_max]
+          }
+      }else{
+        #pour donnees numeriques
+      }
+    })
 
+    meth_dist <- reactive({
+      switch(input$inDist,
+             "S2 coefficient of Gower & Legendre" = 10,
+             "S3 Jaccard index" = 1,
+             "S4 Simple matching coefficient of Sokal & Michener" = 2,
+             "S5 Sokal & Sneath" = 3,
+             "S6 Rogers & Tanimoto" = 4,
+             "S7 Dice or Sorensen" = 5,
+             "S9 Hamann coefficient" = 6,
+             "S12 Ochiai" = 7,
+             "S13 Sokal & Sneath" = 8,
+             "S14 Phi of Pearson" = 9,
+             "euclidean" = "euclidean",
+             "maximum" = "maximum",
+            "manhattan" = "manhattan",
+            "canberra" = "canberra",
+            "binary" = "binary",
+            "minkowski" = "minkowski"
+      )
+    })
 
-      # datamat <- datamat[rowSums(datamat)>n,]
-      # datamat <- datamat[rowSums(datamat)<ncol(datamat)-n,]
-
-
-    )
+    distm <- reactive({
+      if(typ_data == "Binary"){
+        #pour binaire
+      }else{
+        #pour numerique
+      }
+    })
 
 
 

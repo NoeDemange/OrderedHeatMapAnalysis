@@ -19,6 +19,7 @@
 attachment::att_amend_desc()
 usethis::use_package("shinydashboard")
 usethis::use_package("shinycustomloader")
+usethis::use_package("shinyFeedback")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
