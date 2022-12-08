@@ -20,11 +20,22 @@ attachment::att_amend_desc()
 usethis::use_package("shinydashboard")
 usethis::use_package("shinycustomloader")
 usethis::use_package("shinyFeedback")
+usethis::use_package("ComplexHeatmap")
+usethis::use_package("stats")
+usethis::use_package("utils")
+usethis::use_package("DendSer")
+usethis::use_package("ade4")
+usethis::use_package("cluster")
+usethis::use_package("viridis")
+usethis::use_package("seriation")
+usethis::use_package("grid")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module(name = "data_loading", with_test = FALSE) # Name of the module
 golem::add_module(name = "data_processing", with_test = FALSE) # Name of the module
+golem::add_module(name = "heatmap_simple", with_test = FALSE) # Name of the module
+
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*

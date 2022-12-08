@@ -6,12 +6,16 @@
 #'
 #' @noRd
 #'
+#' @import seriation
+#' @import DendSer
+#' @import stats
 #' @importFrom shiny NS tagList
 mod_data_processing_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidPage(
       box(title = "Data Processing",status = "primary",solidHeader = TRUE,
+          helpText("choose your parameters and press validate"),
           helpText(h3("Data type")),
           radioButtons(ns("typ_data"),"",choices = c( #Ajouter des informations d'aides explications
             "Binary",
@@ -61,6 +65,7 @@ mod_data_processing_ui <- function(id){
                                                             "median","centroid","diana")),
         helpText(h3("Seriation")),
         radioButtons(ns('ser'),"Seriation", choices = c("Oui","Non"), selected="Oui", inline = TRUE),
+        actionButton(ns("val"), "validate"),
         width = 12
       )
     )
@@ -78,8 +83,9 @@ mod_data_processing_server <- function(id, r=r){
     })
 
     #mettre les donnees apres filtrage, filtrage en fonction bianire ou non
-    r$fil_df <- reactive({
-      if(typ_data == "Binary"){
+    r$fil_df <- eventReactive(input$val,{
+      req(r$df)
+      if(input$typ_data == "Binary"){
           datamat <- r$df()
           datamat <- datamat[rowSums(datamat)>=input$fl_min,]
           if(input$fl_max!=0){
@@ -92,6 +98,7 @@ mod_data_processing_server <- function(id, r=r){
       }else{
         #pour donnees numeriques
       }
+      return(r$df())
     })
 
     meth_dist <- reactive({
@@ -108,23 +115,61 @@ mod_data_processing_server <- function(id, r=r){
              "S14 Phi of Pearson" = 9,
              "euclidean" = "euclidean",
              "maximum" = "maximum",
-            "manhattan" = "manhattan",
-            "canberra" = "canberra",
-            "binary" = "binary",
-            "minkowski" = "minkowski"
+             "manhattan" = "manhattan",
+             "canberra" = "canberra",
+             "binary" = "binary",
+             "minkowski" = "minkowski"
       )
     })
 
-    distm <- reactive({
-      if(typ_data == "Binary"){
-        #pour binaire
+    #distance ligne
+    distm_ml <- reactive({
+      if(input$typ_data == "Binary"){
+        dMat <- ade4::dist.binary(r$fil_df(), method = meth_dist(), diag = FALSE, upper = FALSE)
       }else{
         #pour numerique
       }
     })
 
+    #distance colonne
+    distm_mc <- reactive({
+      if(input$typ_data == "Binary"){
+        TdMat <- ade4::dist.binary(t(as.matrix(r$fil_df())), method = meth_dist(), diag = FALSE, upper = FALSE)
+      }else{
+        #pour numerique
+      }
+    })
 
+    r$HC_l <- reactive({
+      if(input$inHC != "diana"){
+        HC <- stats::hclust(distm_ml(), method= input$inHC)
+      } else{
+        HC <- stats::as.hclust(cluster::diana(distm_ml())) #HC avec diana du package cluster
+      }
+      if(input$ser=="Oui"){
+        OrdSer <- DendSer::DendSer(HC, distm_ml(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
+        HC <-  seriation::permute(HC, OrdSer)
+      }
+      return(HC)
+    })
 
+    r$HC_c <- reactive({
+      if(input$inHC != "diana"){
+        HC <- stats::hclust(distm_mc(), method= input$inHC)
+      } else{
+        HC <- stats::as.hclust(cluster::diana(distm_mc())) #HC avec diana du package cluster
+      }
+      if(input$ser=="Oui"){
+        OrdSer <- DendSer::DendSer(HC, distm_mc(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
+        HC <-  seriation::permute(HC, OrdSer)
+      }
+      return(HC)
+    })
+
+    #matrice ordonnee
+    r$M_ser <- reactive({
+      r$fil_df[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
+    })
 
   })
 }

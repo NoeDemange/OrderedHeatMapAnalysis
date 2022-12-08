@@ -6,6 +6,8 @@
 #'
 #' @noRd
 #'
+#' @import tools
+#' @import utils
 #' @importFrom shiny NS tagList
 mod_data_loading_ui <- function(id) {
   ns <- NS(id)

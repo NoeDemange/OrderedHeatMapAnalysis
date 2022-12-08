@@ -45,7 +45,7 @@ app_ui <- function(request) {
                                       mod_data_processing_ui("data_processing_1")
                               ),
                               tabItem(tabName= "ht_simp",
-                                     # mod_phylo_ui("phylo_1")
+                                      mod_heatmap_simple_ui("heatmap_simple_1")
 
                               )
                             )
