@@ -13,14 +13,12 @@ mod_data_loading_ui <- function(id) {
     fluidPage(
       box(title = "Data",status = "primary",solidHeader = TRUE,
           helpText(
-            "Choisissez si vous voulez utiliser le dataset demo, importer votre dataset (format .csv avce Header et nom des lignes en premiere colonne)
-                                    ou une matrice de distance (format .rds). Puis appuyez sur valider"
+            "Choisissez si vous voulez utiliser le dataset demo,ou importer votre dataset (format .csv avce Header et nom des lignes en premiere colonne).
+            Puis appuyez sur valider"
           ),
           radioButtons(ns("data"),"",choices = c(
             "demo (Folds/Species)",
-            "Your Dataset (.csv)",
-            "Matrice de distance (.rds)"  #voir à supprimer cette ligne (pas utile trop complexe)
-            ),
+            "Your Dataset (.csv)"),
             selected = "demo (Folds/Species)",inline = TRUE),
           br(),
           fileInput(ns("file"), "Import", accept = c(".csv", ".rds")),
@@ -56,14 +54,6 @@ mod_data_loading_server <- function(id,r=r) {
           return(datf)
         }else{
           stop("Ce n'est pas un .csv")
-        }
-      }else{
-        req(input$file)
-        if(tools::file_ext(input$file$name)=="rds"){
-          datf <- readRDS(file(input$file$datapath))
-          return(datf)
-        }else{
-          stop("Ce n'est pas un .rds")
         }
       }
     })
