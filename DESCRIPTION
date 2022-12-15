@@ -17,9 +17,8 @@ Imports:
     grid,
     seriation,
     shiny (>= 1.7.3),
-    shinycustomloader,
+    shinycssloaders,
     shinydashboard,
-    shinyFeedback,
     stats,
     utils,
     viridis

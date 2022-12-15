@@ -18,8 +18,7 @@
 ## install.package('attachment') # if needed.
 attachment::att_amend_desc()
 usethis::use_package("shinydashboard")
-usethis::use_package("shinycustomloader")
-usethis::use_package("shinyFeedback")
+usethis::use_package("shinycssloaders")
 usethis::use_package("ComplexHeatmap")
 usethis::use_package("stats")
 usethis::use_package("utils")

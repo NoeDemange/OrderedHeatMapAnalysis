@@ -6,7 +6,7 @@
 #'
 #' @noRd
 #'
-#' @import shinycustomloader
+#' @import shinycssloaders
 #' @import ComplexHeatmap
 #' @import grid
 #' @import stats
@@ -16,7 +16,7 @@ mod_heatmap_simple_ui <- function(id){
   tagList(
     fluidPage(
       box(title = "Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
-          withLoader(plotOutput(ns("ht_simple"), height = "600px")),
+          shinycssloaders::withSpinner(plotOutput(ns("ht_simple"), height = "600px")),
           width=12
       )
     )

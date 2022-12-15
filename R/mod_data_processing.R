@@ -33,8 +33,8 @@ mod_data_processing_ui <- function(id){
                               If you do not want to make any changes, enter zero."),
                      column(6,
                             helpText(h5("Line")),
-                            numericInput(ns("fl_min"), "min", value = 0),
-                            numericInput(ns("fl_max"), "max", value = 0)
+                            numericInput(ns("fl_min"), "min", value = 2),
+                            numericInput(ns("fl_max"), "max", value = 1)
                      ),
                      column(6,
                             helpText(h5("Column")),
@@ -62,10 +62,10 @@ mod_data_processing_ui <- function(id){
         selectInput(ns('inHC'),"Clustering hierarchique", c("ward.D","ward.D2",
                                                             "single","complete",
                                                             "average","mcquitty",
-                                                            "median","centroid","diana")),
+                                                            "median","centroid","diana"),
+                    selected = "diana"),
         helpText(h3("Seriation")),
         radioButtons(ns('ser'),"Seriation", choices = c("Oui","Non"), selected="Oui", inline = TRUE),
-        actionButton(ns("val"), "validate"),
         width = 12
       )
     )
@@ -83,22 +83,18 @@ mod_data_processing_server <- function(id, r=r){
     })
 
     #mettre les donnees apres filtrage, filtrage en fonction bianire ou non
-    r$fil_df <- eventReactive(input$val,{
+    r$fil_df <- reactive({
       req(r$df)
       if(input$typ_data == "Binary"){
           datamat <- r$df()
           datamat <- datamat[rowSums(datamat)>=input$fl_min,]
-          if(input$fl_max!=0){
-            datamat <- datamat[rowSums(datamat)<=input$flmax,]
-          }
+          datamat <- datamat[rowSums(datamat)<=(ncol(datamat)-input$fl_max),]
           datamat <- datamat[,colSums(datamat)>=input$fc_min]
-          if(input$fc_max!=0){
-            datamat <- datamat[,colSums(datamat)>=input$fc_max]
-          }
+          datamat <- datamat[,colSums(datamat)<=(nrow(datamat)-input$fc_max)]
       }else{
         #pour donnees numeriques
       }
-      return(r$df())
+      return(datamat)
     })
 
     meth_dist <- reactive({
@@ -168,7 +164,8 @@ mod_data_processing_server <- function(id, r=r){
 
     #matrice ordonnee
     r$M_ser <- reactive({
-      r$fil_df[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
+      rser <- r$fil_df()
+      rser <- rser[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
     })
 
   })
