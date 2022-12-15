@@ -11,6 +11,7 @@
 #' @import grid
 #' @import stats
 #' @import seriation
+#' @import viridis
 #' @importFrom shiny NS tagList
 mod_heatmap_simple_ui <- function(id){
   ns <- NS(id)
@@ -24,12 +25,15 @@ mod_heatmap_simple_ui <- function(id){
                     selected = "Yes",inline = TRUE
                  )
           ),
-          column(3,
+          column(9,
                  radioButtons(ns("Dend_col"), "Column",
                               choices = list("Yes", "No"),
                               selected = "Yes",inline = TRUE
                  )
           ),
+          helpText(h3("Color")),
+          selectInput(ns("color"),"",c("magma","inferno","plasma","viridis",
+                                       "cividis","rocket","mako","turbo"),selected="magma"),
           actionButton(ns("val_a1"), "valider"),
           width=12
       ),
@@ -48,6 +52,19 @@ mod_heatmap_simple_server <- function(id, r=r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    fun_color <- reactive({
+      switch(input$color,
+             "magma" = viridis::magma(256),
+             "inferno" = viridis::inferno(256),
+             "plasma" = viridis::plasma(256),
+             "viridis" = viridis::viridis(256),
+             "cividis" = viridis::cividis(256),
+             "rocket" = viridis::rocket(256),
+             "mako" = viridis::mako(256),
+             "turbo" = viridis::turbo(256)
+      )
+    })
+
 
     plot <- eventReactive(input$val_a1,{
       req(r$fil_df)
@@ -56,7 +73,7 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- mat[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
                                                  cluster_rows = FALSE, cluster_columns = FALSE,
-                                                 col = viridis::magma(256), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                 col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                  row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                  column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
         )
@@ -65,7 +82,7 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- mat[seriation::get_order(r$HC_l()),]
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
                                                  cluster_rows = FALSE, cluster_columns = stats::as.dendrogram(r$HC_c()),
-                                                 col = viridis::magma(256), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                 col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                  row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                  column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
         )
@@ -74,14 +91,14 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- mat[, seriation::get_order(r$HC_c())]
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
                                                  cluster_rows = stats::as.dendrogram(r$HC_l()), cluster_columns = FALSE,
-                                                 col = viridis::magma(256), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                 col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                  row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                  column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
         )
       }else{
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = "Heatmapsimple",
                                                cluster_rows = stats::as.dendrogram(r$HC_l()), cluster_columns = stats::as.dendrogram(r$HC_c()),
-                                               col = viridis::magma(256), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                               col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
                                               )
