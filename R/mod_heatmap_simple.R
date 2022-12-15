@@ -72,8 +72,10 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- r$fil_df()
         mat <- mat[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
-                                                 cluster_rows = FALSE, cluster_columns = FALSE,
-                                                 col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                 cluster_rows = FALSE,
+                                                 cluster_columns = FALSE,
+                                                 col = fun_color(),
+                                                 column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                  row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                  column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
         )
@@ -81,8 +83,10 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- r$fil_df()
         mat <- mat[seriation::get_order(r$HC_l()),]
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
-                                                 cluster_rows = FALSE, cluster_columns = stats::as.dendrogram(r$HC_c()),
-                                                 col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                 cluster_rows = FALSE,
+                                                 cluster_columns = stats::as.dendrogram(r$HC_c()),
+                                                 col = fun_color(),
+                                                 column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                  row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                  column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
         )
@@ -90,15 +94,19 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- r$fil_df()
         mat <- mat[, seriation::get_order(r$HC_c())]
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
-                                                 cluster_rows = stats::as.dendrogram(r$HC_l()), cluster_columns = FALSE,
-                                                 col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                 cluster_rows = stats::as.dendrogram(r$HC_l()),
+                                                 cluster_columns = FALSE,
+                                                 col = fun_color(),
+                                                 column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                  row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                  column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
         )
       }else{
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = "Heatmapsimple",
-                                               cluster_rows = stats::as.dendrogram(r$HC_l()), cluster_columns = stats::as.dendrogram(r$HC_c()),
-                                               col = fun_color(), column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                               cluster_rows = stats::as.dendrogram(r$HC_l()),
+                                               cluster_columns = stats::as.dendrogram(r$HC_c()),
+                                               col = fun_color(),
+                                               column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
                                                column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
                                               )
