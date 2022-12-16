@@ -34,6 +34,7 @@ usethis::use_package("grid")
 golem::add_module(name = "data_loading", with_test = FALSE) # Name of the module
 golem::add_module(name = "data_processing", with_test = FALSE) # Name of the module
 golem::add_module(name = "heatmap_simple", with_test = FALSE) # Name of the module
+golem::add_module(name = "heatmap_split", with_test = FALSE) # Name of the module
 
 
 ## Add helper functions ----

@@ -46,8 +46,10 @@ app_ui <- function(request) {
                               ),
                               tabItem(tabName= "ht_simp",
                                       mod_heatmap_simple_ui("heatmap_simple_1")
-
-                              )
+                              ),
+                              tabItem(tabName= "ht_split",
+                                      mod_heatmap_split_ui("heatmap_split_1")
+                              ),
                             )
                           )
                         )
