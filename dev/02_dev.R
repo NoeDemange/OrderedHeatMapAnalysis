@@ -28,6 +28,8 @@ usethis::use_package("cluster")
 usethis::use_package("viridis")
 usethis::use_package("seriation")
 usethis::use_package("grid")
+usethis::use_package("gplots")
+usethis::use_package("dendextend")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
