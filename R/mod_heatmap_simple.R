@@ -78,7 +78,7 @@ mod_heatmap_simple_server <- function(id, r=r){
     })
 
 
-    plot <- eventReactive(input$val_a1,{
+    htplot <- eventReactive(input$val_a1,{
       req(r$fil_df)
       if(input$Dend_row == "No" && input$Dend_col == "No"){
         mat <- r$fil_df()
@@ -144,8 +144,8 @@ mod_heatmap_simple_server <- function(id, r=r){
 
 
     output$ht_simple <- renderPlot({
-      req(plot)
-      plot()
+      req(htplot)
+      htplot()
     })
 
     output$down <- downloadHandler(
@@ -155,67 +155,7 @@ mod_heatmap_simple_server <- function(id, r=r){
       # content is a function with argument file. content writes the plot to the device
       content = function(file) {
         grDevices::pdf(file) # open the pdf device
-        # req(r$fil_df)
-        # if(input$Dend_row == "No" && input$Dend_col == "No"){
-        #   mat <- r$fil_df()
-        #   mat <- mat[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
-        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
-        #                                            cluster_rows = FALSE,
-        #                                            cluster_columns = FALSE,
-        #                                            col = fun_color(),
-        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
-        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
-        #                                                                      col=aff_color()),
-        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
-        #                                                                         col=aff_color()),
-        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
-        #   )
-        # }else if(input$Dend_row == "No" && input$Dend_col == "Yes"){
-        #   mat <- r$fil_df()
-        #   mat <- mat[seriation::get_order(r$HC_l()),]
-        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
-        #                                            cluster_rows = FALSE,
-        #                                            cluster_columns = stats::as.dendrogram(r$HC_c()),
-        #                                            column_dend_gp = gpar(col = aff_color()),
-        #                                            col = fun_color(),
-        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
-        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
-        #                                                                      col=aff_color()),
-        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
-        #                                                                         col=aff_color()),
-        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
-        #   )
-        # }else if(input$Dend_row == "Yes" && input$Dend_col == "No"){
-        #   mat <- r$fil_df()
-        #   mat <- mat[, seriation::get_order(r$HC_c())]
-        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
-        #                                            cluster_rows = stats::as.dendrogram(r$HC_l()),
-        #                                            row_dend_gp = gpar(col = aff_color()),
-        #                                            cluster_columns = FALSE,
-        #                                            col = fun_color(),
-        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
-        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
-        #                                                                      col=aff_color()),
-        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
-        #                                                                         col=aff_color()),
-        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
-        #   )
-        # }else{
-        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
-        #                                            cluster_rows = stats::as.dendrogram(r$HC_l()),
-        #                                            row_dend_gp = gpar(col = aff_color()),
-        #                                            cluster_columns = stats::as.dendrogram(r$HC_c()),
-        #                                            column_dend_gp = gpar(col = aff_color()),
-        #                                            col = fun_color(),
-        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
-        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
-        #                                                                      col=aff_color()),
-        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
-        #                                                                         col=aff_color()),
-        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
-        #   )
-        # }
-        # draw(Heatmapsimple, background = input$bg_color)# draw the plot
+        plot(htplot())
         grDevices::dev.off()  # turn the device off
       })
 
