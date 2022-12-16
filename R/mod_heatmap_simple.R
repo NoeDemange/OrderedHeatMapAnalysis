@@ -17,7 +17,7 @@ mod_heatmap_simple_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidPage(
-      box(title = "Parameter", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+      box(title = "Settings", status = "primary", solidHeader = TRUE, collapsible = TRUE,
           helpText(h3("Show Dendrogram")),
           column(3,
                  radioButtons(ns("Dend_row"), "Row",
@@ -32,13 +32,17 @@ mod_heatmap_simple_ui <- function(id){
                  )
           ),
           helpText(h3("Color")),
-          selectInput(ns("color"),"",c("magma","inferno","plasma","viridis",
+          selectInput(ns("color"),"Heatmap",c("magma","inferno","plasma","viridis",
                                        "cividis","rocket","mako","turbo"),selected="magma"),
+          selectInput(ns("bg_color"),"Background",c("white","black"),selected="white"),
+          helpText(h3("Legend")),
+          textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
           actionButton(ns("val_a1"), "valider"),
           width=12
       ),
       box(title = "Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
           shinycssloaders::withSpinner(plotOutput(ns("ht_simple"), height = "600px")),
+          downloadButton(ns("down"), label = "Download the plot", style="color:#000000; display: block"),
            width=10
       )
     )
@@ -65,53 +69,77 @@ mod_heatmap_simple_server <- function(id, r=r){
       )
     })
 
+    aff_color <- reactive({
+      if(input$bg_color == "white"){
+        return("black")
+      }else{
+        return("white")
+      }
+    })
+
 
     plot <- eventReactive(input$val_a1,{
       req(r$fil_df)
       if(input$Dend_row == "No" && input$Dend_col == "No"){
         mat <- r$fil_df()
         mat <- mat[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
-        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
+        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                  cluster_rows = FALSE,
                                                  cluster_columns = FALSE,
                                                  col = fun_color(),
                                                  column_names_max_height = max_text_width(colnames(r$fil_df())),
-                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
-                                                 column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
+                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                           col=aff_color()),
+                                                 column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                              col=aff_color()),
+                                                 heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
         )
       }else if(input$Dend_row == "No" && input$Dend_col == "Yes"){
         mat <- r$fil_df()
         mat <- mat[seriation::get_order(r$HC_l()),]
-        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
+        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                  cluster_rows = FALSE,
                                                  cluster_columns = stats::as.dendrogram(r$HC_c()),
+                                                 column_dend_gp = gpar(col = aff_color()),
                                                  col = fun_color(),
                                                  column_names_max_height = max_text_width(colnames(r$fil_df())),
-                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
-                                                 column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
+                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                           col=aff_color()),
+                                                 column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                              col=aff_color()),
+                                                 heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
         )
       }else if(input$Dend_row == "Yes" && input$Dend_col == "No"){
         mat <- r$fil_df()
         mat <- mat[, seriation::get_order(r$HC_c())]
-        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = "Heatmapsimple",
+        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                  cluster_rows = stats::as.dendrogram(r$HC_l()),
+                                                 row_dend_gp = gpar(col = aff_color()),
                                                  cluster_columns = FALSE,
                                                  col = fun_color(),
                                                  column_names_max_height = max_text_width(colnames(r$fil_df())),
-                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
-                                                 column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
+                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                           col=aff_color()),
+                                                 column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                              col=aff_color()),
+                                                 heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
         )
       }else{
-        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = "Heatmapsimple",
+        Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
                                                cluster_rows = stats::as.dendrogram(r$HC_l()),
+                                               row_dend_gp = gpar(col = aff_color()),
                                                cluster_columns = stats::as.dendrogram(r$HC_c()),
+                                               column_dend_gp = gpar(col = aff_color()),
                                                col = fun_color(),
                                                column_names_max_height = max_text_width(colnames(r$fil_df())),
-                                               row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df()))),
-                                               column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df()))),
+                                               row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                         col=aff_color()),
+                                               column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                            col=aff_color()),
+                                               heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
                                               )
       }
-      draw(Heatmapsimple)
+      draw(Heatmapsimple, background = input$bg_color)
       })
 
 
@@ -119,6 +147,77 @@ mod_heatmap_simple_server <- function(id, r=r){
       req(plot)
       plot()
     })
+
+    output$down <- downloadHandler(
+      filename =  function() {
+        paste(input$legend_name,"pdf",sep=".")
+      },
+      # content is a function with argument file. content writes the plot to the device
+      content = function(file) {
+        grDevices::pdf(file) # open the pdf device
+        # req(r$fil_df)
+        # if(input$Dend_row == "No" && input$Dend_col == "No"){
+        #   mat <- r$fil_df()
+        #   mat <- mat[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
+        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
+        #                                            cluster_rows = FALSE,
+        #                                            cluster_columns = FALSE,
+        #                                            col = fun_color(),
+        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
+        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+        #                                                                      col=aff_color()),
+        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+        #                                                                         col=aff_color()),
+        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        #   )
+        # }else if(input$Dend_row == "No" && input$Dend_col == "Yes"){
+        #   mat <- r$fil_df()
+        #   mat <- mat[seriation::get_order(r$HC_l()),]
+        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
+        #                                            cluster_rows = FALSE,
+        #                                            cluster_columns = stats::as.dendrogram(r$HC_c()),
+        #                                            column_dend_gp = gpar(col = aff_color()),
+        #                                            col = fun_color(),
+        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
+        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+        #                                                                      col=aff_color()),
+        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+        #                                                                         col=aff_color()),
+        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        #   )
+        # }else if(input$Dend_row == "Yes" && input$Dend_col == "No"){
+        #   mat <- r$fil_df()
+        #   mat <- mat[, seriation::get_order(r$HC_c())]
+        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
+        #                                            cluster_rows = stats::as.dendrogram(r$HC_l()),
+        #                                            row_dend_gp = gpar(col = aff_color()),
+        #                                            cluster_columns = FALSE,
+        #                                            col = fun_color(),
+        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
+        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+        #                                                                      col=aff_color()),
+        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+        #                                                                         col=aff_color()),
+        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        #   )
+        # }else{
+        #   Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
+        #                                            cluster_rows = stats::as.dendrogram(r$HC_l()),
+        #                                            row_dend_gp = gpar(col = aff_color()),
+        #                                            cluster_columns = stats::as.dendrogram(r$HC_c()),
+        #                                            column_dend_gp = gpar(col = aff_color()),
+        #                                            col = fun_color(),
+        #                                            column_names_max_height = max_text_width(colnames(r$fil_df())),
+        #                                            row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+        #                                                                      col=aff_color()),
+        #                                            column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+        #                                                                         col=aff_color()),
+        #                                            heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        #   )
+        # }
+        # draw(Heatmapsimple, background = input$bg_color)# draw the plot
+        grDevices::dev.off()  # turn the device off
+      })
 
 
   })
