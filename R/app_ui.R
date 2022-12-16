@@ -49,7 +49,7 @@ app_ui <- function(request) {
                               ),
                               tabItem(tabName= "ht_split",
                                       mod_heatmap_split_ui("heatmap_split_1")
-                              ),
+                              )
                             )
                           )
                         )

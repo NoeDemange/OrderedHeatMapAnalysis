@@ -31,11 +31,10 @@ mod_heatmap_simple_ui <- function(id){
                               selected = "Yes",inline = TRUE
                  )
           ),
-          helpText(h3("Color")),
-          selectInput(ns("color"),"Heatmap",c("magma","inferno","plasma","viridis",
+          helpText(h3("Heatmap")),
+          selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
                                        "cividis","rocket","mako","turbo"),selected="magma"),
-          selectInput(ns("bg_color"),"Background",c("white","black"),selected="white"),
-          helpText(h3("Legend")),
+          selectInput(ns("bg_color"),"Background color",c("white","black"),selected="white"),
           textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
           actionButton(ns("val_a1"), "valider"),
           width=12

@@ -51,11 +51,10 @@ mod_data_processing_ui <- function(id){
                                  selected = "S12 Ochiai")
             ),
             tabPanel("Numerical",
-                     helpText("En Creation"),
-                     # helpText(h3("Distance calculation")),
-                     # selectInput(ns('inDist'),"Distance", c("euclidean","maximum",
-                     #                                        "manhattan","canberra",
-                     #                                        "binary","minkowski"), selected = "binary"),
+                     helpText(h3("Distance calculation")),
+                     selectInput(ns('inDist_num'),"Distance", c("euclidean","maximum",
+                                                            "manhattan","canberra",
+                                                            "binary","minkowski"), selected = "binary"),
             )
           ),
         helpText(h3("Hierarchical clustering")),
@@ -85,14 +84,14 @@ mod_data_processing_server <- function(id, r=r){
     #mettre les donnees apres filtrage, filtrage en fonction bianire ou non
     r$fil_df <- reactive({
       req(r$df)
+      datamat <- r$df()
       if(input$typ_data == "Binary"){
-          datamat <- r$df()
           datamat <- datamat[rowSums(datamat)>=input$fl_min,]
           datamat <- datamat[rowSums(datamat)<=(ncol(datamat)-input$fl_max),]
           datamat <- datamat[,colSums(datamat)>=input$fc_min]
           datamat <- datamat[,colSums(datamat)<=(nrow(datamat)-input$fc_max)]
       }else{
-        #pour donnees numeriques
+        #ajouter ici filtre pour numerique
       }
       return(datamat)
     })
@@ -108,13 +107,7 @@ mod_data_processing_server <- function(id, r=r){
              "S9 Hamann coefficient" = 6,
              "S12 Ochiai" = 7,
              "S13 Sokal & Sneath" = 8,
-             "S14 Phi of Pearson" = 9,
-             "euclidean" = "euclidean",
-             "maximum" = "maximum",
-             "manhattan" = "manhattan",
-             "canberra" = "canberra",
-             "binary" = "binary",
-             "minkowski" = "minkowski"
+             "S14 Phi of Pearson" = 9
       )
     })
 
@@ -123,7 +116,7 @@ mod_data_processing_server <- function(id, r=r){
       if(input$typ_data == "Binary"){
         dMat <- ade4::dist.binary(r$fil_df(), method = meth_dist(), diag = FALSE, upper = FALSE)
       }else{
-        #pour numerique
+         dMat <- stats::dist(r$fil_df(), method = input$inDist_num)
       }
     })
 
@@ -132,7 +125,7 @@ mod_data_processing_server <- function(id, r=r){
       if(input$typ_data == "Binary"){
         TdMat <- ade4::dist.binary(t(as.matrix(r$fil_df())), method = meth_dist(), diag = FALSE, upper = FALSE)
       }else{
-        #pour numerique
+        TdMat <- stats::dist(t(as.matrix(r$fil_df())), method = input$inDist_num)
       }
     })
 
