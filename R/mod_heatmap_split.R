@@ -128,12 +128,13 @@ mod_heatmap_split_server <- function(id, r=r){
     })
 
 ##server
+
     htsplot <- eventReactive(input$val_a2,{
       if(input$split_row == "No" && input$split_col == "No"){
         textplot("Choose to split on row or column,\n or go to Heatmap\n",cex=1.5)
       }else{
       req(r$fil_df)
-  ###cutree
+  ###cutree Dendro
       if(input$typ_split=="cluster" && input$meth_split=="cutree"){
          if(input$split_row == "No" && input$split_col == "Yes"){
           mat <- r$fil_df()
