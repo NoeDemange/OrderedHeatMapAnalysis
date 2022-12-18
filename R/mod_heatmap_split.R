@@ -11,6 +11,7 @@
 #' @importFrom gplots textplot
 #' @importFrom dendextend color_branches
 #' @importFrom dynamicTreeCut cutreeHybrid
+#' @useDynLib biseriatedheatmaps, .registration = TRUE
 #' @importFrom shiny NS tagList
 mod_heatmap_split_ui <- function(id){
   ns <- NS(id)
