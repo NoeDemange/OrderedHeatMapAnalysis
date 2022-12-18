@@ -32,6 +32,8 @@ usethis::use_package("gplots")
 usethis::use_package("dendextend")
 usethis::use_package("dynamicTreeCut")
 usethis::use_package("Rcpp")
+usethis::use_package("grDevices")
+usethis::use_package("circlize")
 
 ## Add modules ----
 ## Create a module infrastructure in R/

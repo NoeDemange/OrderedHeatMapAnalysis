@@ -11,6 +11,8 @@
 #' @importFrom gplots textplot
 #' @importFrom dendextend color_branches
 #' @importFrom dynamicTreeCut cutreeHybrid
+#' @importFrom circlize colorRamp2
+#' @importFrom grDevices rainbow
 #' @useDynLib biseriatedheatmaps, .registration = TRUE
 #' @importFrom shiny NS tagList
 mod_heatmap_split_ui <- function(id){
@@ -155,6 +157,7 @@ mod_heatmap_split_server <- function(id, r=r){
                                                    column_split = input$Kcol,
                                                    column_title = NULL,
                                                    col = fun_color(),
+                                                   border=aff_color(),
                                                    column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                    row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
                                                                              col=aff_color()),
@@ -173,6 +176,7 @@ mod_heatmap_split_server <- function(id, r=r){
                                                    row_title = NULL,
                                                    cluster_columns = FALSE,
                                                    col = fun_color(),
+                                                   border=aff_color(),
                                                    column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                    row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
                                                                              col=aff_color()),
@@ -193,6 +197,7 @@ mod_heatmap_split_server <- function(id, r=r){
                                                    column_split = input$Kcol,
                                                    column_title = NULL,
                                                    col = fun_color(),
+                                                   border=aff_color(),
                                                    column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                    row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
                                                                              col=aff_color()),
@@ -218,6 +223,17 @@ mod_heatmap_split_server <- function(id, r=r){
       cth <- cth_numgroup(cth)
     })
 
+    anno_r <- reactive({
+      VmA <- c(1:length(clus_r()))
+      mrep <- c(length(clus_r()),0)
+      vrep <- rep(mrep,length(clus_r()))
+      vcutch <- clus_r()
+      for(j in VmA){vcutch[which(vcutch==j)]<-j+vrep[j]}
+      pal = circlize::colorRamp2(as.integer(levels(as.factor(vcutch))), grDevices::rainbow(n = nlevels(as.factor(vcutch))))
+      RowAN <- rowAnnotation(Cluster = anno_simple(vcutch, na_col=input$bg_color, col = pal),
+                             annotation_name_gp = gpar(col =aff_color()))
+    })
+
     clus_c <- reactive({
       if(input$meth_split=="cutree"){
         cth <- stats::cutree(r$HC_c(),k=input$Kcol)
@@ -230,6 +246,16 @@ mod_heatmap_split_server <- function(id, r=r){
       cth <- cth_numgroup(cth)
     })
 
+    anno_c <- reactive({
+      VmA <- c(1:length(clus_c()))
+      mrep <- c(length(clus_c()),0)
+      vrep <- rep(mrep,length(clus_c()))
+      vcutch <- clus_c()
+      for(j in VmA){vcutch[which(vcutch==j)]<-j+vrep[j]}
+      pal = circlize::colorRamp2(as.integer(levels(as.factor(vcutch))), grDevices::rainbow(n = nlevels(as.factor(vcutch))))
+      ColumnAN <- HeatmapAnnotation(Cluster = anno_simple(vcutch, na_col=input$bg_color, col = pal),
+                                    annotation_name_gp = gpar(col = aff_color()))
+    })
 
 
     clusAnno <- reactive({
@@ -239,9 +265,11 @@ mod_heatmap_split_server <- function(id, r=r){
         Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                 cluster_rows = FALSE,
                                                 cluster_columns = FALSE,
-                                                column_split = input$Kcol,
+                                                column_split = clus_c(),
                                                 column_title = NULL,
+                                                top_annotation = anno_c(),
                                                 col = fun_color(),
+                                                border=aff_color(),
                                                 column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
                                                                           col=aff_color()),
@@ -251,13 +279,14 @@ mod_heatmap_split_server <- function(id, r=r){
         )
       }else if(input$split_row == "Yes" && input$split_col == "No"){
         mat <- r$M_ser()
-        #dend <- stats::as.dendrogram(r$HC_l())
         Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                 cluster_rows = FALSE,
-                                                row_split = input$Krow,
+                                                row_split = clus_r(),
                                                 row_title = NULL,
+                                                left_annotation = anno_r(),
                                                 cluster_columns = FALSE,
                                                 col = fun_color(),
+                                                border=aff_color(),
                                                 column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
                                                                           col=aff_color()),
@@ -271,12 +300,15 @@ mod_heatmap_split_server <- function(id, r=r){
         # dend_col <- stats::as.dendrogram(r$HC_c())
         Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                 cluster_rows = FALSE,
-                                                row_split = FALSE,
+                                                row_split = clus_r(),
                                                 row_title = NULL,
+                                                left_annotation = anno_r(),
                                                 cluster_columns = FALSE,
-                                                column_split = input$Kcol,
+                                                column_split = clus_c(),
                                                 column_title = NULL,
+                                                top_annotation = anno_c(),
                                                 col = fun_color(),
+                                                border=aff_color(),
                                                 column_names_max_height = max_text_width(colnames(r$fil_df())),
                                                 row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
                                                                           col=aff_color()),
@@ -301,7 +333,7 @@ mod_heatmap_split_server <- function(id, r=r){
                 ((input$meth_split=="cutree" && input$cutree_dend=="No")||
                  (input$meth_split=="cutreeHybrid"))){
           req(r$M_ser)
-          textplot("test")
+          return(clusAnno())
         }
       }
     })
