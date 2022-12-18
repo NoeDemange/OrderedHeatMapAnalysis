@@ -112,7 +112,7 @@ mod_data_processing_server <- function(id, r=r){
     })
 
     #distance ligne
-    distm_ml <- reactive({
+    r$distm_ml <- reactive({
       if(input$typ_data == "Binary"){
         dMat <- ade4::dist.binary(r$fil_df(), method = meth_dist(), diag = FALSE, upper = FALSE)
       }else{
@@ -121,7 +121,7 @@ mod_data_processing_server <- function(id, r=r){
     })
 
     #distance colonne
-    distm_mc <- reactive({
+    r$distm_mc <- reactive({
       if(input$typ_data == "Binary"){
         TdMat <- ade4::dist.binary(t(as.matrix(r$fil_df())), method = meth_dist(), diag = FALSE, upper = FALSE)
       }else{
@@ -131,12 +131,12 @@ mod_data_processing_server <- function(id, r=r){
 
     r$HC_l <- reactive({
       if(input$inHC != "diana"){
-        HC <- stats::hclust(distm_ml(), method= input$inHC)
+        HC <- stats::hclust(r$distm_ml(), method= input$inHC)
       } else{
-        HC <- stats::as.hclust(cluster::diana(distm_ml())) #HC avec diana du package cluster
+        HC <- stats::as.hclust(cluster::diana(r$distm_ml())) #HC avec diana du package cluster
       }
       if(input$ser=="Oui"){
-        OrdSer <- DendSer::DendSer(HC, distm_ml(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
+        OrdSer <- DendSer::DendSer(HC, r$distm_ml(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
         HC <-  seriation::permute(HC, OrdSer)
       }
       return(HC)
@@ -144,12 +144,12 @@ mod_data_processing_server <- function(id, r=r){
 
     r$HC_c <- reactive({
       if(input$inHC != "diana"){
-        HC <- stats::hclust(distm_mc(), method= input$inHC)
+        HC <- stats::hclust(r$distm_mc(), method= input$inHC)
       } else{
-        HC <- stats::as.hclust(cluster::diana(distm_mc())) #HC avec diana du package cluster
+        HC <- stats::as.hclust(cluster::diana(r$distm_mc())) #HC avec diana du package cluster
       }
       if(input$ser=="Oui"){
-        OrdSer <- DendSer::DendSer(HC, distm_mc(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
+        OrdSer <- DendSer::DendSer(HC, r$distm_mc(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
         HC <-  seriation::permute(HC, OrdSer)
       }
       return(HC)

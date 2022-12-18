@@ -10,6 +10,7 @@
 #' @import ComplexHeatmap
 #' @importFrom gplots textplot
 #' @importFrom dendextend color_branches
+#' @importFrom dynamicTreeCut cutreeHybrid
 #' @importFrom shiny NS tagList
 mod_heatmap_split_ui <- function(id){
   ns <- NS(id)
@@ -35,7 +36,7 @@ mod_heatmap_split_ui <- function(id){
                        choiceValues = list("cluster", "ecp"),
                        selected = "cluster",inline = TRUE),
           #Ajout mise à jour pour afficher choix pour donner binaire ou donner numérique, voir mastering shiny 10.2.1 Conditional UI
-          #Tabs pour afficher mode binary ou mode numerical
+          #Tabs pour afficher mode cluster ou point de transition
           parameter_tabs <- tabsetPanel(
             id = ns("params"),
             type = "hidden",
@@ -43,6 +44,7 @@ mod_heatmap_split_ui <- function(id){
                      radioButtons(ns("meth_split"),"Methode of Split",
                                   choices = list("cutree","cutreeHybrid"),
                                   selected = "cutree",inline = TRUE),
+                     #tabs pour cutree ou cutreeHybrid
                      parameter_tabs <- tabsetPanel(
                        id = ns("params_clus"),
                        type = "hidden",
@@ -52,12 +54,23 @@ mod_heatmap_split_ui <- function(id){
                                 ),
                                 column(6,
                                   numericInput(ns("Kcol"),"Number of column clusters",value=4,min=1)
+                                ),
+                                radioButtons(ns("cutree_dend"), "Show dendrogram",
+                                             choices = list("Yes", "No"),
+                                             selected = "Yes",inline = TRUE
                                 )
                        ),
                        tabPanel("cutreeHybrid",
-                                helpText("cutreeHybrid settings"),
-                                numericInput(ns("minsize"), "MinClusterSize", value = 1, min = 1),
-                                sliderInput(ns("ds"), "deepSplit", value = 0, min = 0, max = 4),
+                                column(6,
+                                  helpText(h4("Row")),
+                                  numericInput(ns("minsize_row"), "MinClusterSize", value = 1, min = 1),
+                                  sliderInput(ns("ds_row"), "deepSplit", value = 0, min = 0, max = 4)
+                                ),
+                                column(6,
+                                  helpText(h4("Column")),
+                                  numericInput(ns("minsize_col"), "MinClusterSize", value = 1, min = 1),
+                                  sliderInput(ns("ds_col"), "deepSplit", value = 0, min = 0, max = 4)
+                                ),
                        )
                      ),
             ),
@@ -190,14 +203,104 @@ mod_heatmap_split_server <- function(id, r=r){
       draw(Heatmapsplit, background = input$bg_color)
     })
 
+###annotation cluster
+
+    clus_r <- reactive({
+      if(input$meth_split=="cutree"){
+        cth <- stats::cutree(r$HC_l(),k=input$Krow)
+      }else{
+        cth <- dynamicTreeCut::cutreeHybrid(r$HC_l(), as.matrix(r$distm_ml()),
+                                            minClusterSize = input$minsize_row, deepSplit = input$ds_row,
+                                            verbose = 0)$labels
+      }
+      cth <- cth[get_order(r$HC_l())]
+      cth <- cth_numgroup(cth)
+    })
+
+    clus_c <- reactive({
+      if(input$meth_split=="cutree"){
+        cth <- stats::cutree(r$HC_c(),k=input$Kcol)
+      }else{
+        cth <- dynamicTreeCut::cutreeHybrid(r$HC_c(), as.matrix(r$distm_mc()),
+                                            minClusterSize = input$minsize_col, deepSplit = input$ds_col,
+                                            verbose = 0)$labels
+      }
+      cth <- cth[get_order(r$HC_c())]
+      cth <- cth_numgroup(cth)
+    })
+
+
+
+    clusAnno <- reactive({
+      if(input$split_row == "No" && input$split_col == "Yes"){
+        mat <- r$M_ser()
+        #dend <- stats::as.dendrogram(r$HC_c())
+        Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
+                                                cluster_rows = FALSE,
+                                                cluster_columns = FALSE,
+                                                column_split = input$Kcol,
+                                                column_title = NULL,
+                                                col = fun_color(),
+                                                column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                          col=aff_color()),
+                                                column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                             col=aff_color()),
+                                                heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        )
+      }else if(input$split_row == "Yes" && input$split_col == "No"){
+        mat <- r$M_ser()
+        #dend <- stats::as.dendrogram(r$HC_l())
+        Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
+                                                cluster_rows = FALSE,
+                                                row_split = input$Krow,
+                                                row_title = NULL,
+                                                cluster_columns = FALSE,
+                                                col = fun_color(),
+                                                column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                          col=aff_color()),
+                                                column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                             col=aff_color()),
+                                                heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        )
+      }else{
+        mat <- r$M_ser()
+        # dend_row <- stats::as.dendrogram(r$HC_l())
+        # dend_col <- stats::as.dendrogram(r$HC_c())
+        Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
+                                                cluster_rows = FALSE,
+                                                row_split = FALSE,
+                                                row_title = NULL,
+                                                cluster_columns = FALSE,
+                                                column_split = input$Kcol,
+                                                column_title = NULL,
+                                                col = fun_color(),
+                                                column_names_max_height = max_text_width(colnames(r$fil_df())),
+                                                row_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(nrow(r$fil_df())),
+                                                                          col=aff_color()),
+                                                column_names_gp = grid::gpar(fontsize = 0.2 + 1/log10(ncol(r$fil_df())),
+                                                                             col=aff_color()),
+                                                heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
+        )
+      }
+      draw(Heatmapsplit, background = input$bg_color)
+    })
+
     htsplot <- htsplot <- eventReactive(input$val_a2,{
       if(input$split_row == "No" && input$split_col == "No"){
         textplot("Choose to split on row or column,\n or go to Heatmap\n",cex=1.5)
       }
       else{
-        req(r$fil_df)
-        if(input$typ_split=="cluster" && input$meth_split=="cutree"){
+        if(input$typ_split=="cluster" && input$meth_split=="cutree" && input$cutree_dend=="Yes"){
+          req(r$fil_df)
           return(cutreedendro())
+        }
+        else if(input$typ_split=="cluster" &&
+                ((input$meth_split=="cutree" && input$cutree_dend=="No")||
+                 (input$meth_split=="cutreeHybrid"))){
+          req(r$M_ser)
+          textplot("test")
         }
       }
     })
