@@ -128,14 +128,8 @@ mod_heatmap_split_server <- function(id, r=r){
     })
 
 ##server
-
-    htsplot <- eventReactive(input$val_a2,{
-      if(input$split_row == "No" && input$split_col == "No"){
-        textplot("Choose to split on row or column,\n or go to Heatmap\n",cex=1.5)
-      }else{
-      req(r$fil_df)
   ###cutree Dendro
-      if(input$typ_split=="cluster" && input$meth_split=="cutree"){
+    cutreedendro <- reactive({
          if(input$split_row == "No" && input$split_col == "Yes"){
           mat <- r$fil_df()
           mat <- mat[seriation::get_order(r$HC_l()),]
@@ -193,12 +187,20 @@ mod_heatmap_split_server <- function(id, r=r){
                                                    heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
           )
         }
-      }
       draw(Heatmapsplit, background = input$bg_color)
-      }
     })
 
-
+    htsplot <- htsplot <- eventReactive(input$val_a2,{
+      if(input$split_row == "No" && input$split_col == "No"){
+        textplot("Choose to split on row or column,\n or go to Heatmap\n",cex=1.5)
+      }
+      else{
+        req(r$fil_df)
+        if(input$typ_split=="cluster" && input$meth_split=="cutree"){
+          return(cutreedendro())
+        }
+      }
+    })
 
 ##output
     output$ht_split <- renderPlot({
