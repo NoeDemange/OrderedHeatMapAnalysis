@@ -90,9 +90,13 @@ mod_heatmap_split_ui <- function(id){
 
 ##ui for heatmap
           helpText(h3("Heatmap")),
-          selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
-                                              "cividis","rocket","mako","turbo"),selected="magma"),
-          selectInput(ns("bg_color"),"Background color",c("white","black"),selected="white"),
+          column(6,
+            selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
+                                              "cividis","rocket","mako","turbo"),selected="magma")
+            ),
+          column(6,
+            selectInput(ns("bg_color"),"Background color",c("white","black"),selected="white")
+            ),
           textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
           actionButton(ns("val_a2"), "valider"),
           width=12
@@ -101,7 +105,15 @@ mod_heatmap_split_ui <- function(id){
           shinycssloaders::withSpinner(plotOutput(ns("ht_split"), height = "600px")),
           downloadButton(ns("down"), label = "Download the plot", style="color:#000000; display: block"),
           width=10
-      )
+      ),
+
+box(title = "clusters", status = "success", solidHeader = TRUE,
+    shinycssloaders::withSpinner(verbatimTextOutput(ns("clust"))),
+    downloadButton(ns("down_data"), label = "Download clusters", style="color:#000000; display: block"),
+    width=12)
+
+
+
     )
   )
 }
@@ -211,6 +223,7 @@ mod_heatmap_split_server <- function(id, r=r){
 
 ###annotation cluster
 
+    ####cluster ligne
     clus_r <- reactive({
       if(input$meth_split=="cutree"){
         cth <- stats::cutree(r$HC_l(),k=input$Krow)
@@ -234,6 +247,18 @@ mod_heatmap_split_server <- function(id, r=r){
                              annotation_name_gp = gpar(col =aff_color()))
     })
 
+    group_r <- reactive({
+      names <- rownames(r$M_ser()) #on recupere les noms des lignes du data.frame
+      gr <- list()
+      for(i in unique(clus_r())){
+        if(i!=0){
+          gr[[i]] <- names[which(clus_r()==i)]
+        }
+      }
+      return(gr)
+    })
+
+    ####cluster colonne
     clus_c <- reactive({
       if(input$meth_split=="cutree"){
         cth <- stats::cutree(r$HC_c(),k=input$Kcol)
@@ -257,11 +282,37 @@ mod_heatmap_split_server <- function(id, r=r){
                                     annotation_name_gp = gpar(col = aff_color()))
     })
 
+    group_c <- reactive({
+      names <- colnames(r$M_ser()) #on recupere les noms des colonnes du data.frame
+      gr <- list()
+      for(i in unique(clus_c())){
+        if(i!=0){
+          gr[[i]] <- names[which(clus_c()==i)]
+        }
+      }
+      return(gr)
+    })
 
+    ####groupe matrice
+    group_rc <- reactive({
+      names_r <- rownames(r$M_ser()) #on recupere les noms des lignes du data.frame
+      names_c <- colnames(r$M_ser()) #on recupere les noms des colonnes du data.frame
+      gr <- list()
+      for(i in unique(clus_r())){
+        gr[[i]]<-list()
+        for(j in unique(clus_c())){
+          if(i!=0 && j!=0){
+          gr[[i]][[j]] <- c(names_r[which(clus_r()==i)],names_c[which(clus_c()==j)])
+          }
+        }
+      }
+      return(gr)
+    })
+
+    ####affichage
     clusAnno <- reactive({
       if(input$split_row == "No" && input$split_col == "Yes"){
         mat <- r$M_ser()
-        #dend <- stats::as.dendrogram(r$HC_c())
         Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                 cluster_rows = FALSE,
                                                 cluster_columns = FALSE,
@@ -296,8 +347,6 @@ mod_heatmap_split_server <- function(id, r=r){
         )
       }else{
         mat <- r$M_ser()
-        # dend_row <- stats::as.dendrogram(r$HC_l())
-        # dend_col <- stats::as.dendrogram(r$HC_c())
         Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                 cluster_rows = FALSE,
                                                 row_split = clus_r(),
@@ -320,7 +369,7 @@ mod_heatmap_split_server <- function(id, r=r){
       draw(Heatmapsplit, background = input$bg_color)
     })
 
-    htsplot <- htsplot <- eventReactive(input$val_a2,{
+    htsplot <- eventReactive(input$val_a2,{
       if(input$split_row == "No" && input$split_col == "No"){
         textplot("Choose to split on row or column,\n or go to Heatmap\n",cex=1.5)
       }
@@ -338,10 +387,38 @@ mod_heatmap_split_server <- function(id, r=r){
       }
     })
 
+    group <- eventReactive(input$val_a2,{
+      if(input$split_row == "No" && input$split_col == "No"){
+        return(cat("Choose to split on row or column, or go to Heatmap"))
+      }
+      else{
+        if(input$typ_split=="cluster" && input$meth_split=="cutree" && input$cutree_dend=="Yes"){
+          req(r$fil_df)
+          return(cat("To see name in group, choose no dendrogram"))
+        }
+        else if(input$typ_split=="cluster" &&
+                ((input$meth_split=="cutree" && input$cutree_dend=="No")||
+                 (input$meth_split=="cutreeHybrid"))){
+          req(r$M_ser)
+          if(input$split_row == "No" && input$split_col == "Yes"){
+            return(group_c())
+          }else if(input$split_row == "Yes" && input$split_col == "No"){
+            return(group_r())
+          }else{
+            return(group_rc())
+          }
+        }
+      }
+    })
+
 ##output
     output$ht_split <- renderPlot({
       req(htsplot)
       htsplot()
+    })
+
+    output$clust <- renderPrint({
+      group()
     })
 
     output$down <- downloadHandler(
@@ -353,6 +430,17 @@ mod_heatmap_split_server <- function(id, r=r){
         grDevices::pdf(file) # open the pdf device
         plot(htsplot())
         grDevices::dev.off()  # turn the device off
+      })
+
+    output$down_data <- downloadHandler(
+      filename =  function() {
+        paste0("clusters_",input$legend_name,".txt")
+      },
+      # content is a function with argument file. content writes the plot to the device
+      content = function(file) {
+        sink(file)
+        print(group())
+        sink()
       })
 
 
