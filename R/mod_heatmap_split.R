@@ -13,6 +13,7 @@
 #' @importFrom dynamicTreeCut cutreeHybrid
 #' @importFrom circlize colorRamp2
 #' @importFrom grDevices rainbow
+#' @importFrom ecp e.divisive
 #' @useDynLib biseriatedheatmaps, .registration = TRUE
 #' @importFrom shiny NS tagList
 mod_heatmap_split_ui <- function(id){
@@ -78,7 +79,16 @@ mod_heatmap_split_ui <- function(id){
                      ),
             ),
             tabPanel("ecp",
-                     helpText(h3("En creation")),
+                     column(6,
+                            helpText(h4("Row")),
+                            numericInput(ns("ecp_minsize_row"), "MinClusterSize", value = 1, min = 1),
+                            numericInput(ns("siglvl_row"), "Significant level", value = 0.05, min = 0, max = 1)
+                     ),
+                     column(6,
+                            helpText(h4("Column")),
+                            numericInput(ns("ecp_minsize_col"), "MinClusterSize", value = 1, min = 1),
+                            numericInput(ns("siglvl_col"), "Significant level", value = 0.05, min = 0, max = 1)
+                     ),
             )
         ),
 
@@ -225,12 +235,18 @@ mod_heatmap_split_server <- function(id, r=r){
 
     ####cluster ligne
     clus_r <- reactive({
-      if(input$meth_split=="cutree"){
+      if(input$typ_split == "cluster"){
+        if(input$meth_split=="cutree"){
         cth <- stats::cutree(r$HC_l(),k=input$Krow)
-      }else{
-        cth <- dynamicTreeCut::cutreeHybrid(r$HC_l(), as.matrix(r$distm_ml()),
-                                            minClusterSize = input$minsize_row, deepSplit = input$ds_row,
-                                            verbose = 0)$labels
+        }else{
+          cth <- dynamicTreeCut::cutreeHybrid(r$HC_l(), as.matrix(r$distm_ml()),
+                                              minClusterSize = input$minsize_row, deepSplit = input$ds_row,
+                                              verbose = 0)$labels
+        }
+      }
+      else{
+        cth <- ecp::e.divisive(as.matrix(r$M_ser()), min.size=input$ecp_minsize_row,
+                          sig.lvl=input$siglvl_row)$cluster
       }
       cth <- cth[get_order(r$HC_l())]
       cth <- cth_numgroup(cth)
@@ -260,12 +276,17 @@ mod_heatmap_split_server <- function(id, r=r){
 
     ####cluster colonne
     clus_c <- reactive({
-      if(input$meth_split=="cutree"){
+      if(input$typ_split == "cluster"){
+        if(input$meth_split=="cutree"){
         cth <- stats::cutree(r$HC_c(),k=input$Kcol)
+        }else{
+          cth <- dynamicTreeCut::cutreeHybrid(r$HC_c(), as.matrix(r$distm_mc()),
+                                              minClusterSize = input$minsize_col, deepSplit = input$ds_col,
+                                              verbose = 0)$labels
+        }
       }else{
-        cth <- dynamicTreeCut::cutreeHybrid(r$HC_c(), as.matrix(r$distm_mc()),
-                                            minClusterSize = input$minsize_col, deepSplit = input$ds_col,
-                                            verbose = 0)$labels
+        cth <- ecp::e.divisive(t(as.matrix(r$M_ser())), min.size=input$ecp_minsize_col,
+                               sig.lvl=input$siglvl_col)$cluster
       }
       cth <- cth[get_order(r$HC_c())]
       cth <- cth_numgroup(cth)
@@ -378,9 +399,10 @@ mod_heatmap_split_server <- function(id, r=r){
           req(r$fil_df)
           return(cutreedendro())
         }
-        else if(input$typ_split=="cluster" &&
-                ((input$meth_split=="cutree" && input$cutree_dend=="No")||
-                 (input$meth_split=="cutreeHybrid"))){
+        else{
+          # if(input$typ_split=="cluster" &&
+          #       ((input$meth_split=="cutree" && input$cutree_dend=="No")||
+          #        (input$meth_split=="cutreeHybrid"))){
           req(r$M_ser)
           return(clusAnno())
         }
@@ -396,9 +418,7 @@ mod_heatmap_split_server <- function(id, r=r){
           req(r$fil_df)
           return(cat("To see name in group, choose no dendrogram"))
         }
-        else if(input$typ_split=="cluster" &&
-                ((input$meth_split=="cutree" && input$cutree_dend=="No")||
-                 (input$meth_split=="cutreeHybrid"))){
+        else{
           req(r$M_ser)
           if(input$split_row == "No" && input$split_col == "Yes"){
             return(group_c())
