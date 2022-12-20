@@ -288,6 +288,28 @@ mod_heatmap_analysis_server <- function(id,r=r){
       return(RowAN)
     })
 
+    anno_c <- reactive({
+      vGroup <- vgroup()
+      if(is.numeric(vGroup)){
+        #Permet d'inverser des indices dans le vecteur vGroup et de faire une palette de couleur
+        #(Avoir des couleurs differentes pour des clusters a cote dans l'annotation)
+        VmA <- c(1:length(vGroup))
+        mrep <- c(length(vGroup),0)
+        vrep <- rep(mrep,length(vGroup))
+        for(j in VmA){vGroup[which(vGroup[]==j)]<-j+vrep[j]}
+        pal = circlize::colorRamp2(as.integer(levels(as.factor(vGroup))),grDevices::rainbow(n = nlevels(as.factor(vGroup))))
+      } else{
+        pal = c("sup"= "green", "inf" = "red") ##paramètre couleur
+      }
+      #definition de l'annotation des clusters des lignes et permet d'afficher la valeur de l'analyse de la ligne
+      ColumnAN <- HeatmapAnnotation(Cluster = anno_simple(vGroup, na_col=input$bg_color, col = pal),
+                             foo = anno_points(vecAnaly(), gp = gpar(col = ifelse(vecAnaly() >=input$Ssup,"chocolate1",
+                                                                                  ifelse(vecAnaly()<=input$Sinf,"turquoise1",aff_color()))),
+                                               size=unit(1,"mm"),axis_param = list(gp = gpar(col=aff_color())),),
+                             annotation_name_gp = gpar(col =aff_color()))
+      return(ColumnAN)
+    })
+
 
     htsplot <- eventReactive(input$val_a3,{
       req(r$M_ser)
@@ -321,7 +343,34 @@ mod_heatmap_analysis_server <- function(id,r=r){
           }, slice = s)
         }
       }else{
-
+        #multiplication du vecteur d'analyse de la matrice avec la matrice permettant la coloration
+        VecIndStruc <- vecAnaly()
+        matrice <- t(VecIndStruc* t(as.matrix(r$M_ser())))
+        #creation de la Heatmap
+        HM <- Heatmap(matrice, name = input$legend_name,
+                      cluster_rows = FALSE, cluster_columns = FALSE,
+                      col = fun_color(),
+                      column_names_max_height = max_text_width(colnames(matrice)),
+                      show_row_names = FALSE,
+                      row_names_gp = gpar(fontsize = 0.2 + 1/log10(nrow(matrice)),
+                                          col=aff_color()),
+                      column_names_gp = gpar(fontsize = 0.2 + 1/log10(ncol(matrice)),
+                                             col=aff_color()),
+                      #pour split
+                      border = aff_color(),
+                      heatmap_legend_param = list(title_gp = gpar(col=aff_color()), labels_gp = gpar(col=aff_color())),
+                      column_split = fsplit(),
+                      column_title = NULL, column_gap = unit(0,"mm"),
+                      top_annotation = anno_c(),
+        )
+        #dessine la Heatmap avec en fond la couleur choisie
+        draw(HM, background = input$bg_color)
+        #Permet de faire les cadres des groupes >Ssup ou <Sinf
+        for(s in levels(fsplit())){
+          decorate_annotation("foo",{grid.lines(c(0,1), unit(c(input$Ssup,input$Ssup),"native"), gp = gpar(col="yellow"))
+            grid.lines(c(0,1),unit(c(input$Sinf,input$Sinf),"native"), gp = gpar(col="yellow"))
+          }, slice = s)
+        }
       }
     })
 
@@ -381,7 +430,34 @@ mod_heatmap_analysis_server <- function(id,r=r){
             }, slice = s)
           }
         }else{
-
+          #multiplication du vecteur d'analyse de la matrice avec la matrice permettant la coloration
+          VecIndStruc <- vecAnaly()
+          matrice <- t(VecIndStruc* t(as.matrix(r$M_ser())))
+          #creation de la Heatmap
+          HM <- Heatmap(matrice, name = input$legend_name,
+                        cluster_rows = FALSE, cluster_columns = FALSE,
+                        col = fun_color(),
+                        column_names_max_height = max_text_width(colnames(matrice)),
+                        show_row_names = FALSE,
+                        row_names_gp = gpar(fontsize = 0.2 + 1/log10(nrow(matrice)),
+                                            col=aff_color()),
+                        column_names_gp = gpar(fontsize = 0.2 + 1/log10(ncol(matrice)),
+                                               col=aff_color()),
+                        #pour split
+                        border = aff_color(),
+                        heatmap_legend_param = list(title_gp = gpar(col=aff_color()), labels_gp = gpar(col=aff_color())),
+                        column_split = fsplit(),
+                        column_title = NULL, column_gap = unit(0,"mm"),
+                        top_annotation = anno_c(),
+          )
+          #dessine la Heatmap avec en fond la couleur choisie
+          draw(HM, background = input$bg_color)
+          #Permet de faire les cadres des groupes >Ssup ou <Sinf
+          for(s in levels(fsplit())){
+            decorate_annotation("foo",{grid.lines(c(0,1), unit(c(input$Ssup,input$Ssup),"native"), gp = gpar(col="yellow"))
+              grid.lines(c(0,1),unit(c(input$Sinf,input$Sinf),"native"), gp = gpar(col="yellow"))
+            }, slice = s)
+          }
         }
         grDevices::dev.off()  # turn the device off
       })
