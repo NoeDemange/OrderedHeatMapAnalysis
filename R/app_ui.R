@@ -19,22 +19,9 @@ app_ui <- function(request) {
                             menuItem("Data Processing", tabName = "tdon", icon = icon("fas fa-table")),
                             menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
                             menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
+                            menuItem("Data Analysis Heatmap", tabName = "ht_analysis", icon = icon("fas fa-tasks")),
                             style = "font-size:18px"
                           )
-                          # ,
-                          # br(),
-                          # br(),
-                          # br(),
-                          # br(),
-                          # br(),
-                          # br(),
-                          # br(),
-                          # br(),
-                          # column(12,
-                          #        downloadButton(outputId = "down", label = "Download the plot", style="color:#000000; display: block"),
-                          #        textInput("fname", "Nom du fichier", value = "Plot"),
-                          #        radioButtons("ext","Type de fichier", c("png","pdf"), selected = "pdf", inline = TRUE)
-                          # )
                         ),
                         dashboardBody(
                           fluidRow(
@@ -50,6 +37,9 @@ app_ui <- function(request) {
                               ),
                               tabItem(tabName= "ht_split",
                                       mod_heatmap_split_ui("heatmap_split_1")
+                              ),
+                              tabItem(tabName= "ht_analysis",
+                                      mod_heatmap_analysis_ui("heatmap_analysis_1")
                               )
                             )
                           )

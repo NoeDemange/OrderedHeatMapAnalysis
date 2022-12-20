@@ -10,6 +10,28 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// cppARorder
+NumericVector cppARorder(NumericMatrix mat);
+RcppExport SEXP _biseriatedheatmaps_cppARorder(SEXP matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    rcpp_result_gen = Rcpp::wrap(cppARorder(mat));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cppcorrNeighbor
+NumericVector cppcorrNeighbor(NumericMatrix mat);
+RcppExport SEXP _biseriatedheatmaps_cppcorrNeighbor(SEXP matSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    rcpp_result_gen = Rcpp::wrap(cppcorrNeighbor(mat));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cth_numgroup
 NumericVector cth_numgroup(NumericVector cvo);
 RcppExport SEXP _biseriatedheatmaps_cth_numgroup(SEXP cvoSEXP) {
@@ -21,9 +43,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpprunstest
+NumericVector cpprunstest(NumericMatrix mat, std::string alternative);
+RcppExport SEXP _biseriatedheatmaps_cpprunstest(SEXP matSEXP, SEXP alternativeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< std::string >::type alternative(alternativeSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpprunstest(mat, alternative));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_biseriatedheatmaps_cppARorder", (DL_FUNC) &_biseriatedheatmaps_cppARorder, 1},
+    {"_biseriatedheatmaps_cppcorrNeighbor", (DL_FUNC) &_biseriatedheatmaps_cppcorrNeighbor, 1},
     {"_biseriatedheatmaps_cth_numgroup", (DL_FUNC) &_biseriatedheatmaps_cth_numgroup, 1},
+    {"_biseriatedheatmaps_cpprunstest", (DL_FUNC) &_biseriatedheatmaps_cpprunstest, 2},
     {NULL, NULL, 0}
 };
 

@@ -59,7 +59,6 @@ mod_data_loading_server <- function(id,r=r) {
         }
       }
     })
-    #r$data <- reactive({input$data})
   })
 
 }

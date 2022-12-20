@@ -35,6 +35,7 @@ usethis::use_package("Rcpp")
 usethis::use_package("grDevices")
 usethis::use_package("circlize")
 usethis::use_package("ecp")
+usethis::use_package("tseries")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
@@ -42,6 +43,7 @@ golem::add_module(name = "data_loading", with_test = FALSE) # Name of the module
 golem::add_module(name = "data_processing", with_test = FALSE) # Name of the module
 golem::add_module(name = "heatmap_simple", with_test = FALSE) # Name of the module
 golem::add_module(name = "heatmap_split", with_test = FALSE) # Name of the module
+golem::add_module(name = "heatmap_analysis", with_test = FALSE) # Name of the module
 
 
 ## Add helper functions ----
