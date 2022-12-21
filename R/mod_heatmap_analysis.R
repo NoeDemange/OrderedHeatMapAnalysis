@@ -7,6 +7,7 @@
 #' @noRd
 #'
 #' @import stats
+#' @import seriation
 #' @importFrom grDevices rainbow pdf
 #' @importFrom ecp e.divisive
 #' @importFrom shiny NS tagList
@@ -65,10 +66,10 @@ mod_heatmap_analysis_ui <- function(id){
           )),
         helpText("Define the upper and lower bounds at which the average of a group is significant"),
         column(6,
-               numericInput(ns("Ssup"), "Upper", value = 10),
+               numericInput(ns("Ssup"), "Upper", value = 0),
                ),
         column(6,
-               numericInput(ns("Sinf"), "Lower", value = 7),
+               numericInput(ns("Sinf"), "Lower", value = 0),
         ),
         helpText("Display the significant groups (group) or their correspondence to the bounds (bound)"),
         radioButtons(ns("methodshowsplit"), "Choose",
@@ -154,6 +155,22 @@ mod_heatmap_analysis_server <- function(id,r=r){
       }
     })
 
+    matDist <- reactive({
+      if(input$roworcol == "Row"){
+        return(as.matrix(r$distm_ml()))
+      }else{
+        return(as.matrix(r$distm_mc()))
+      }
+    })
+
+    ser <- reactive({
+      if(input$roworcol == "Row"){
+        return(r$HC_l())
+      }else{
+        return(r$HC_c())
+      }
+    })
+
 
     vecAnaly <- reactive({
       if(input$m_analysis == "RunsTest"){
@@ -162,14 +179,49 @@ mod_heatmap_analysis_server <- function(id,r=r){
         #traitement des resultats
         RunTV[RunTV > 0] <- 0
         vec <-(-1)*RunTV
-      }else if(input$m_analysis == "ECPRunsTest"){
-
       }else if(input$m_analysis == "Phi"){
-
+        matrice <- mat()
+        #permet de calculer le coefficient Phi de la premiere ligne avec la suivante
+        T <- table(matrice[1,], matrice[2,])#fait un tableau de contingence
+        Tab2 = T/sum(T)#fait la moyenne
+        a = Tab2[1, 1]
+        b = Tab2[1, 2]
+        c = Tab2[2, 1]
+        d = Tab2[2, 2]
+        Phi = (a - (a + b) * (a + c))/sqrt((a + b) * (c + d) * (a + c) * (b + d)) #calcul de Phi
+        Vphi <- vector()
+        Vphi <-c(Phi)
+        #permet de calculer le coefficient Phi de la deuxieme ligne a l'avant derniere ligne.
+        Vphi <- append(Vphi, cppcorrNeighbor(matrice))
+        #permet de calculer le coefficient Phi de la derniere ligne avec la precedente
+        T <- table(matrice[nrow(matrice)-1,], matrice[nrow(matrice),])
+        Tab2 = T/sum(T)
+        a = Tab2[1, 1]
+        b = Tab2[1, 2]
+        c = Tab2[2, 1]
+        d = Tab2[2, 2]
+        Phi = (a - (a + b) * (a + c))/sqrt((a + b) * (c + d) * (a + c) * (b + d))
+        Vphi <- append(Vphi, Phi)
       }else if(input$m_analysis == "CorrOrder"){
-
+        dMat <- matDist()
+        serdMat <- dMat[seriation::get_order(ser()), seriation::get_order(ser())]
+        mat <- matrix(1, ncol(serdMat),ncol(serdMat))
+        mat[which(row(mat)>col(mat))] <- -1
+        serdMat2 <- serdMat*mat
+        serdMat3 <- serdMat2 - serdMat2[,1]
+        OrdVec2 <- as.matrix(seq(0,(nrow(dMat)-1)))
+        cor <- cor(OrdVec2, t(serdMat3), method = "spearman") #correlation
+        vec<- abs(as.vector(cor))
       }else{
+        TMdMat <- matDist()
+        TMdMat <- TMdMat[seriation::get_order(ser()), seriation::get_order(ser())]
+        Tmat <- matrix(1, ncol(TMdMat),ncol(TMdMat))
+        Tmat[which(row(Tmat)>col(Tmat))] <- -1
+        TMdMat2 <- TMdMat*Tmat
+        TMdMat3 <- TMdMat2 - TMdMat2[,1]
 
+        Viar <- cppARorder(TMdMat3)
+        vec <- sqrt(abs(Viar))
       }
     })
 
