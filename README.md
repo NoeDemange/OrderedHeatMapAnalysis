@@ -27,7 +27,10 @@ devtools::install_github("NoeDemange/biseriatedheatmaps")
 This is a basic example which shows you how to run the app:
 
 ``` r
-library(biseriatedheatmaps)
+library("biseriatedheatmaps")
+#> Registered S3 method overwritten by 'seriation':
+#>   method         from 
+#>   reorder.hclust gclus
 biseriatedheatmaps::run_app(options=list("launch.browser"=TRUE))
 ```
 

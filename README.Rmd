@@ -35,7 +35,7 @@ devtools::install_github("NoeDemange/biseriatedheatmaps")
 This is a basic example which shows you how to run the app:
 
 ```{r example}
-library(biseriatedheatmaps)
+library("biseriatedheatmaps")
 biseriatedheatmaps::run_app(options=list("launch.browser"=TRUE))
 ```
 
