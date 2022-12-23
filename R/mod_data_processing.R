@@ -28,18 +28,18 @@ mod_data_processing_ui <- function(id){
             type = "hidden",
             tabPanel("Binary",
                      helpText(h3("Filtering")),
-                     helpText("Enter for rows and columns the maximum number of ones (max)
-                              and the minimum number of ones (min).
+                     helpText("Enter for rows and columns the minimum number of zeros (min0)
+                              and the minimum number of ones (min1).
                               If you do not want to make any changes, enter zero."),
                      column(6,
                             helpText(h5("Line")),
-                            numericInput(ns("fl_min"), "min", value = 2),
-                            numericInput(ns("fl_max"), "max", value = 1)
+                            numericInput(ns("fl_max"), "min0", value = 1),
+                            numericInput(ns("fl_min"), "min1", value = 2)
                      ),
                      column(6,
                             helpText(h5("Column")),
-                            numericInput(ns("fc_min"), "min", value = 0),
-                            numericInput(ns("fc_max"), "max", value = 0)
+                            numericInput(ns("fc_max"), "min0", value = 0),
+                            numericInput(ns("fc_min"), "min1", value = 0)
                      ),
                      helpText(h3("Distance calculation")),
                      helpText("See method of ade4::dist.binary"),
