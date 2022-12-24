@@ -19,6 +19,7 @@ Imports:
     ecp,
     golem (>= 0.3.5),
     gplots,
+    graphics,
     grDevices,
     grid,
     seriation,

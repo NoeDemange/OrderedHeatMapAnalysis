@@ -36,7 +36,7 @@ mod_heatmap_split_ui <- function(id){
                  )
           ),
           radioButtons(ns("typ_split"),"Type of Split",
-                       choiceNames = list("By cluster","By multiple change-point"),
+                       choiceNames = list("By cluster","By multiple change-point (segmentation)"),
                        choiceValues = list("cluster", "ecp"),
                        selected = "cluster",inline = TRUE),
           #Ajout mise à jour pour afficher choix pour donner binaire ou donner numérique, voir mastering shiny 10.2.1 Conditional UI
@@ -92,23 +92,26 @@ mod_heatmap_split_ui <- function(id){
             )
         ),
 
-
-
-
-
-
-
 ##ui for heatmap
           helpText(h3("Heatmap")),
-          column(6,
-            selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
-                                              "cividis","rocket","mako","turbo"),selected="magma")
+          parameter_tabs <- tabsetPanel(
+            id = ns("params_color"),
+            type = "hidden",
+            tabPanel("Numerical",
+                     selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
+                                                               "cividis","rocket","mako","turbo"),selected="magma"),
             ),
+            tabPanel("Binary",)
+          ),
           column(6,
             selectInput(ns("bg_color"),"Background color",c("white","black"),selected="white")
             ),
-          textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
-          actionButton(ns("val_a2"), "valider"),
+          column(6,
+            textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
+          ),
+          column(12,
+            actionButton(ns("val_a2"), "valider"),
+          ),
           width=12
       ),
       box(title = "Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
@@ -117,7 +120,7 @@ mod_heatmap_split_ui <- function(id){
           width=10
       ),
 
-box(title = "clusters", status = "success", solidHeader = TRUE,
+box(title = "clusters or biclusters", status = "success", solidHeader = TRUE,
     shinycssloaders::withSpinner(verbatimTextOutput(ns("clust"))),
     downloadButton(ns("down_data"), label = "Download clusters", style="color:#000000; display: block"),
     width=12)
@@ -143,18 +146,26 @@ mod_heatmap_split_server <- function(id, r=r){
       updateTabsetPanel(inputId = "params_clus", selected = input$meth_split)
     })
 
+    observeEvent(r$typ_data(),{
+      updateTabsetPanel(inputId = "params_color", selected = r$typ_data())
+    })
+
 ##color
     fun_color <- reactive({
-      switch(input$color,
-             "magma" = viridis::magma(256),
-             "inferno" = viridis::inferno(256),
-             "plasma" = viridis::plasma(256),
-             "viridis" = viridis::viridis(256),
-             "cividis" = viridis::cividis(256),
-             "rocket" = viridis::rocket(256),
-             "mako" = viridis::mako(256),
-             "turbo" = viridis::turbo(256)
-      )
+      if(r$typ_data() == "Binary"){
+        col <- c("0"= "gray4", "1" = "lightgoldenrod3")
+      }else{
+        switch(input$color,
+               "magma" = viridis::magma(256),
+               "inferno" = viridis::inferno(256),
+               "plasma" = viridis::plasma(256),
+               "viridis" = viridis::viridis(256),
+               "cividis" = viridis::cividis(256),
+               "rocket" = viridis::rocket(256),
+               "mako" = viridis::mako(256),
+               "turbo" = viridis::turbo(256)
+        )
+      }
     })
 
     aff_color <- reactive({

@@ -15,7 +15,7 @@ mod_data_processing_ui <- function(id){
   tagList(
     fluidPage(
       box(title = "Data Processing",status = "primary",solidHeader = TRUE,
-          helpText("choose your parameters and press validate"),
+          helpText("choose your parameters"),
           helpText(h3("Data type")),
           radioButtons(ns("typ_data"),"",choices = c( #Ajouter des informations d'aides explications
             "Binary",
@@ -160,6 +160,8 @@ mod_data_processing_server <- function(id, r=r){
       rser <- r$fil_df()
       rser <- rser[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
     })
+
+    r$typ_data <- reactive({td <- input$typ_data})
 
   })
 }

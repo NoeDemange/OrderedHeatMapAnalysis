@@ -10,6 +10,7 @@
 #' @import seriation
 #' @importFrom grDevices rainbow pdf
 #' @importFrom ecp e.divisive
+#' @importFrom graphics hist
 #' @importFrom shiny NS tagList
 mod_heatmap_analysis_ui <- function(id){
   ns <- NS(id)
@@ -44,6 +45,14 @@ mod_heatmap_analysis_ui <- function(id){
 
             )
           ),
+        numericInput(ns("breaks"), "Histogram Breaks", value = 10, min = 1),
+        column(12,
+          actionButton(ns("val"), "valider"),
+        ),
+        helpText(h3("Histogram")),
+        shinycssloaders::withSpinner(plotOutput(ns("hist"), height = "600px")),
+        downloadButton(ns("down_hist"), label = "Download the histogram", style="color:#000000; display: block"),
+        downloadButton(ns("down_vec"), label = "Download the results vector", style="color:#000000; display: block"),
         helpText(h3("Split signifiant areas")),
         helpText("Splits are made by multiple change-point analysis from the e.divisive function from ecp"),
         column(6,
@@ -52,7 +61,7 @@ mod_heatmap_analysis_ui <- function(id){
         column(6,
                numericInput(ns("siglvl"), "Significant level", value = 0.05, min = 0, max = 1)
         ),
-        helpText("Use the results of e.divisive (transition) or the results of a student test on group means (mean)"),
+        helpText("Use the results of e.divisive (transition) or the results of a student test on structured zones means (mean)"),
         radioButtons(ns("methodSplit"), "Choose",
                      choices = list("transition", "mean"),
                      selected = "transition",inline = TRUE),
@@ -64,17 +73,17 @@ mod_heatmap_analysis_ui <- function(id){
           tabPanel("mean",
                    numericInput(ns("conflvl"), "Confidence level of t.test", value = 0.95, min = 0, max = 1),
           )),
-        helpText("Define the upper and lower bounds at which the average of a group is significant"),
+        helpText("Define the upper and lower bounds at which the average of a structured zone is significant, if error change values"),
         column(6,
                numericInput(ns("Ssup"), "Upper", value = 0),
                ),
         column(6,
                numericInput(ns("Sinf"), "Lower", value = 0),
         ),
-        helpText("Display the significant groups (group) or their correspondence to the bounds (bound)"),
+        helpText("Display the significant structured zones (structured zone) or their correspondence to the bounds (bound)"),
         radioButtons(ns("methodshowsplit"), "Choose",
-                     choices = list("group", "bound"),
-                     selected = "group",inline = TRUE),
+                     choices = list("structured zone", "bound"),
+                     selected = "structured zone",inline = TRUE),
 
 
         ##ui for heatmap
@@ -96,7 +105,7 @@ mod_heatmap_analysis_ui <- function(id){
           width=10
       ),
 
-      box(title = "clusters", status = "success", solidHeader = TRUE,
+      box(title = "Zone", status = "success", solidHeader = TRUE,
           shinycssloaders::withSpinner(verbatimTextOutput(ns("clust"))),
           downloadButton(ns("down_data"), label = "Download clusters", style="color:#000000; display: block"),
           width=12)
@@ -121,6 +130,13 @@ mod_heatmap_analysis_server <- function(id,r=r){
     })
     observeEvent(input$methodSplit, {
       updateTabsetPanel(inputId = "params_msplit", selected = input$methodSplit)
+    })
+
+    observeEvent(vecAnaly(),{
+      max_v <- as.numeric(round(max(vecAnaly()),2))
+      min_v <- as.numeric(round(min(vecAnaly()),2))
+      updateNumericInput(inputId = "Ssup", min = min_v, max = max_v)
+      updateNumericInput(inputId = "Sinf", min = min_v, max = max_v)
     })
 
     ##color
@@ -225,6 +241,9 @@ mod_heatmap_analysis_server <- function(id,r=r){
       }
     })
 
+    plot_hist <- eventReactive(input$val,{
+      hist(vecAnaly(), breaks = input$breaks, main = "Histogram of results vector")
+    })
 
     #e.divisive fonction du package ECP, analyse point de transition
     Split <- reactive({
@@ -437,6 +456,11 @@ mod_heatmap_analysis_server <- function(id,r=r){
 
 
     ##output
+    output$hist <- renderPlot({
+      req(plot_hist)
+      plot_hist()
+    })
+
     output$ht_split <- renderPlot({
       req(htsplot)
       htsplot()
@@ -524,6 +548,26 @@ mod_heatmap_analysis_server <- function(id,r=r){
         print(group())
         sink()
       })
+
+    output$down_hist <- downloadHandler(
+      filename =  function() {
+        paste0("hist_",input$m_analysis,"_B_",input$breaks,".pdf")
+      },
+      # content is a function with argument file. content writes the plot to the device
+      content = function(file) {
+        grDevices::pdf(file)
+        hist(vecAnaly(), breaks = input$breaks, main = "Histogram of results vector")
+        grDevices::dev.off()
+      })
+
+    output$down_vec <- downloadHandler(
+      filename = function() {
+        paste0("Vec_", input$m_analysis , ".csv")
+      },
+      content = function(file) {
+        write.csv(vecAnaly(), file)
+      }
+    )
 
   })
 }

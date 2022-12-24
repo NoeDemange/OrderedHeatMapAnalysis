@@ -32,8 +32,15 @@ mod_heatmap_simple_ui <- function(id){
                  )
           ),
           helpText(h3("Heatmap")),
-          selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
+          parameter_tabs <- tabsetPanel(
+            id = ns("params"),
+            type = "hidden",
+            tabPanel("Numerical",
+                     selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
                                        "cividis","rocket","mako","turbo"),selected="magma"),
+                     ),
+            tabPanel("Binary",)
+            ),
           selectInput(ns("bg_color"),"Background color",c("white","black"),selected="white"),
           textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
           actionButton(ns("val_a1"), "valider"),
@@ -54,18 +61,26 @@ mod_heatmap_simple_ui <- function(id){
 mod_heatmap_simple_server <- function(id, r=r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    ##update UI
+    observeEvent(r$typ_data(),{
+      updateTabsetPanel(inputId = "params", selected = r$typ_data())
+    })
 
     fun_color <- reactive({
-      switch(input$color,
-             "magma" = viridis::magma(256),
-             "inferno" = viridis::inferno(256),
-             "plasma" = viridis::plasma(256),
-             "viridis" = viridis::viridis(256),
-             "cividis" = viridis::cividis(256),
-             "rocket" = viridis::rocket(256),
-             "mako" = viridis::mako(256),
-             "turbo" = viridis::turbo(256)
-      )
+      if(r$typ_data() == "Binary"){
+        col <- c("0"= "gray4", "1" = "lightgoldenrod3")
+      }else{
+        switch(input$color,
+               "magma" = viridis::magma(256),
+               "inferno" = viridis::inferno(256),
+               "plasma" = viridis::plasma(256),
+               "viridis" = viridis::viridis(256),
+               "cividis" = viridis::cividis(256),
+               "rocket" = viridis::rocket(256),
+               "mako" = viridis::mako(256),
+               "turbo" = viridis::turbo(256)
+        )
+      }
     })
 
     aff_color <- reactive({
