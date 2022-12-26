@@ -73,7 +73,9 @@ mod_heatmap_analysis_ui <- function(id){
           tabPanel("mean",
                    numericInput(ns("conflvl"), "Confidence level of t.test", value = 0.95, min = 0, max = 1),
           )),
-        helpText("Define the upper and lower bounds at which the average of a structured zone is significant, if error change values"),
+        helpText("Define the upper and lower bounds at which the average of a structured zone is significant.
+                 If you have an error, it is that the area averages are between the bounds, please change the values.
+                 By default Lower is at the first quartile and Upper is at the third quartile."),
         column(6,
                numericInput(ns("Ssup"), "Upper", value = 0),
                ),
@@ -133,10 +135,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
     })
 
     observeEvent(vecAnaly(),{
-      max_v <- as.numeric(round(max(vecAnaly()),2))
-      min_v <- as.numeric(round(min(vecAnaly()),2))
-      updateNumericInput(inputId = "Ssup", min = min_v, max = max_v)
-      updateNumericInput(inputId = "Sinf", min = min_v, max = max_v)
+      max_v <- max(vecAnaly())
+      min_v <- min(vecAnaly())
+      updateNumericInput(inputId = "Ssup", min = min_v, max = max_v, value = quantile(vecAnaly(),names=F)[4])
+      updateNumericInput(inputId = "Sinf", min = min_v, max = max_v, value = quantile(vecAnaly(),names=F)[2])
     })
 
     ##color
