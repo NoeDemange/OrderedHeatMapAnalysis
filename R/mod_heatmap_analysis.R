@@ -109,7 +109,7 @@ mod_heatmap_analysis_ui <- function(id){
 
       box(title = "Zone", status = "success", solidHeader = TRUE,
           shinycssloaders::withSpinner(verbatimTextOutput(ns("clust"))),
-          downloadButton(ns("down_data"), label = "Download clusters", style="color:#000000; display: block"),
+          downloadButton(ns("down_data"), label = "Download zones", style="color:#000000; display: block"),
           width=12)
 
 
