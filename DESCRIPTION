@@ -7,6 +7,8 @@ Description: PKG_DESC.
 License: MIT + file LICENSE
 URL: https://github.com/NoeDemange/biseriatedheatmaps
 BugReports: https://github.com/NoeDemange/biseriatedheatmaps/issues
+Depends: 
+    R (>= 2.10)
 Imports: 
     ade4,
     circlize,
@@ -27,6 +29,8 @@ Imports:
     shinycssloaders,
     shinydashboard,
     stats,
+    tools,
+    tseries,
     utils,
     viridis
 Suggests: 
@@ -39,5 +43,3 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 RoxygenNote: 7.2.3
-Depends: 
-    R (>= 2.10)

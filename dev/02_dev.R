@@ -36,6 +36,7 @@ usethis::use_package("grDevices")
 usethis::use_package("circlize")
 usethis::use_package("ecp")
 usethis::use_package("graphics")
+usethis::use_package("tseries")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
