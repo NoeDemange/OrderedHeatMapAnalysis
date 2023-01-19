@@ -8,6 +8,7 @@
 #'
 #' @import stats
 #' @import seriation
+#' @import tseries
 #' @importFrom grDevices rainbow pdf
 #' @importFrom ecp e.divisive
 #' @importFrom graphics hist
