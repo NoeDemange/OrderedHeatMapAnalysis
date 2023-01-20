@@ -14,4 +14,5 @@ app_server <- function(input, output, session) {
   mod_heatmap_simple_server("heatmap_simple_1", r=r)#
   mod_heatmap_split_server("heatmap_split_1", r=r)
   mod_heatmap_analysis_server("heatmap_analysis_1",r=r)
+  mod_information_server("information_1")
 }

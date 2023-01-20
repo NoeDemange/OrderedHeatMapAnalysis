@@ -20,6 +20,7 @@ app_ui <- function(request) {
                             menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
                             menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
                             menuItem("Data Analysis Heatmap", tabName = "ht_analysis", icon = icon("fas fa-tasks")),
+                            menuItem("Information", tabName = "information", icon = icon("fas fa-info-circle")),
                             style = "font-size:18px"
                           )
                         ),
@@ -40,6 +41,9 @@ app_ui <- function(request) {
                               ),
                               tabItem(tabName= "ht_analysis",
                                       mod_heatmap_analysis_ui("heatmap_analysis_1")
+                              ),
+                              tabItem(tabName= "information",
+                                      mod_information_ui("information_1")
                               )
                             )
                           )
