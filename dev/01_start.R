@@ -21,7 +21,7 @@
 golem::fill_desc(
   pkg_name = "biseriatedheatmaps", # The Name of the package containing the App
   pkg_title = "BSH", # The Title of the package containing the App
-  pkg_description = "PKG_DESC.", # The Description of the package containing the App
+  pkg_description = "Optimised direct visualization and analysis of matrix data structure.", # The Description of the package containing the App
   author_first_name = "Noe", # Your First Name
   author_last_name = "Demange", # Your Last Name
   author_email = "demange.noe@outlook.fr", # Your Email

@@ -9,8 +9,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of biseriatedheatmaps is to analyse bi-seriated data with
-heatmaps.
+Optimised direct visualization and analysis of matrix data structure.
 
 ## Installation
 
@@ -31,25 +30,13 @@ library("biseriatedheatmaps")
 biseriatedheatmaps::run_app(options=list("launch.browser"=TRUE))
 ```
 
-<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
-<!--What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Credits
 
-
-```r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.-->
+This app was developed by [Noe Demange](https://github.com/NoeDemange).
+It was developed for and is maintained by [Guillaume
+Sapriel](https://orcid.org/0000-0003-0549-9376). It is deployed on the
+[MIGALE platform](https://migale.inrae.fr/) by [Cédric
+Midoux](https://orcid.org/0000-0002-7964-0929). We are grateful to the
+INRAE MIGALE bioinformatics facility (MIGALE, INRAE, 2020. Migale
+bioinformatics Facility, doi: 10.15454/1.5572390655343293E12) for
+providing help and storage resources.

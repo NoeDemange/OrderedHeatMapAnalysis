@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of biseriatedheatmaps is to analyse bi-seriated data with heatmaps.
+Optimised direct visualization and analysis of matrix data structure.
 
 ## Installation
 
@@ -39,18 +39,9 @@ library("biseriatedheatmaps")
 biseriatedheatmaps::run_app(options=list("launch.browser"=TRUE))
 ```
 
-<!--What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Credits
 
-```{r cars}
-summary(cars)
-```
+This app was developed by [Noe Demange](https://github.com/NoeDemange).
+It was developed for and is maintained by [Guillaume Sapriel](https://orcid.org/0000-0003-0549-9376).
+It is deployed on the [MIGALE platform](https://migale.inrae.fr/) by [Cédric Midoux](https://orcid.org/0000-0002-7964-0929). We are grateful to the INRAE MIGALE bioinformatics facility (MIGALE, INRAE, 2020. Migale bioinformatics Facility, doi: 10.15454/1.5572390655343293E12) for providing help and storage resources.
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.-->
