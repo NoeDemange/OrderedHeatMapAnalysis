@@ -115,6 +115,9 @@ mod_data_processing_server <- function(id, r=r){
     #mettre les donnees apres filtrage, filtrage en fonction binaire ou non
     r$fil_df <- eventReactive(input$val_DP,{
       req(data_tr)
+      hideFeedback(inputId="inDist")
+      hideFeedback(inputId="inDist_num")
+      hideFeedback(inputId="inHC")
       datamat <- data_tr()
       if(input$typ_data == "Binary"){
         datamat <- datamat[rowSums(datamat==0)<=input$max_zero_row,]
@@ -242,11 +245,11 @@ mod_data_processing_server <- function(id, r=r){
       rser <- rser[seriation::get_order(r$HC_l()), seriation::get_order(r$HC_c())]
     })
 
-    eventReactive(input$val_DP,{
-      hideFeedback(inputId="inDist")
-      hideFeedback(inputId="inDist_num")
-      hideFeedback(inputId="inHC")
-      })
+    # eventReactive(input$val_DP,{
+    #   hideFeedback(inputId="inDist")
+    #   hideFeedback(inputId="inDist_num")
+    #   hideFeedback(inputId="inHC")
+    #   })
 
     r$typ_data <- reactive({td <- input$typ_data})
 
