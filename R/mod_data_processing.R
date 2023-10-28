@@ -246,7 +246,7 @@ mod_data_processing_server <- function(id, r=r){
       hideFeedback(inputId="inDist")
       hideFeedback(inputId="inDist_num")
       hideFeedback(inputId="inHC")
-      hideFeedback(inputId="ser")})
+      })
 
     r$typ_data <- reactive({td <- input$typ_data})
 
