@@ -1,8 +1,10 @@
 Package: biseriatedheatmaps
 Title: BSH
 Version: 0.0.0.9000
-Authors@R: person('Noe', 'Demange', email = 'demange.noe@outlook.fr', role = c('cre', 'aut'))
-Description: Optimised direct visualization and analysis of matrix data structure.
+Authors@R: 
+    person("Noe", "Demange", , "demange.noe@outlook.fr", role = c("cre", "aut"))
+Description: Optimised direct visualization and analysis of matrix data
+    structure.
 License: MIT + file LICENSE
 URL: https://github.com/NoeDemange/biseriatedheatmaps
 BugReports: https://github.com/NoeDemange/biseriatedheatmaps/issues
@@ -27,6 +29,7 @@ Imports:
     shiny (>= 1.7.3),
     shinycssloaders,
     shinydashboard,
+    shinyFeedback,
     stats,
     tools,
     tseries,

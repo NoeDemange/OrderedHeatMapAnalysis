@@ -9,9 +9,11 @@
 #' @import tools
 #' @import utils
 #' @importFrom shiny NS tagList
+#' @import shinyFeedback
 mod_data_loading_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    useShinyFeedback(),
     fluidPage(
       box(title = "Data",status = "primary",solidHeader = TRUE,
           helpText(
@@ -47,13 +49,22 @@ mod_data_loading_server <- function(id,r=r) {
         return(datf)
       }else if(input$data == "Your Dataset (.csv)"){
         req(input$file)
+        hideFeedback(inputId="file")
         if(tools::file_ext(input$file$name)=="csv"){
-          datf <- utils::read.csv(input$file$datapath,
+          tryCatch({
+            datf <- utils::read.csv(input$file$datapath,
                                   header = TRUE,
                                   sep = input$sep,
                                   row.names =1
           )
+          showFeedbackSuccess(inputId="file")
           return(datf)
+          }, error = function(e) {
+            #debug_msg(e$message)
+            showFeedback(inputId = "file", text = e$message, color = "#d9534f",
+                         icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
+                         session = shiny::getDefaultReactiveDomain())
+          })
         }else{
           stop("Ce n'est pas un .csv")
         }

@@ -9,6 +9,7 @@
 #' @import stats
 #' @import seriation
 #' @import tseries
+#' @import shinyFeedback
 #' @importFrom grDevices rainbow pdf
 #' @importFrom ecp e.divisive
 #' @importFrom graphics hist
@@ -16,6 +17,7 @@
 mod_heatmap_analysis_ui <- function(id){
   ns <- NS(id)
   tagList(
+    useShinyFeedback(),
     fluidPage(
       box(title = "Settings", status = "primary", solidHeader = TRUE, collapsible = TRUE,
           ##ui for analysis
@@ -46,9 +48,12 @@ mod_heatmap_analysis_ui <- function(id){
 
             )
           ),
+        column(12,
+               actionButton(ns("val_ha"), "valider"),
+        ),
         numericInput(ns("breaks"), "Histogram Breaks", value = 10, min = 1),
         column(12,
-          actionButton(ns("val"), "valider"),
+          actionButton(ns("val_hahist"), "valider"),
         ),
         helpText(h3("Histogram")),
         shinycssloaders::withSpinner(plotOutput(ns("hist"), height = "600px")),
@@ -93,12 +98,18 @@ mod_heatmap_analysis_ui <- function(id){
         helpText(h3("Heatmap")),
         column(6,
                selectInput(ns("color"),"Heatmap color",c("magma","inferno","plasma","viridis",
-                                                         "cividis","rocket","mako","turbo"),selected="magma")
+                                                         "cividis","rocket","mako","turbo"),selected="turbo")
         ),
         column(6,
                selectInput(ns("bg_color"),"Background color",c("white","black"),selected="black")
         ),
-        textInput(ns("legend_name"),"Enter a legend name",value = "legendname"),
+        textInput(ns("legend_name"),"Enter a legend name",value = "Heatmap"),
+        column(6,
+               numericInput(ns("heatmap_fontsize_col"), "Column fontsize", value = 4, min = 0, max = 100, step = 0.1),
+        ),
+        column(6,
+               numericInput(ns("heatmap_fontsize_row"), "Row fontsize", value = 4, min = 0, max = 100, step = 0.1),
+        ),
         actionButton(ns("val_a3"), "valider"),
         width=12
       ),
@@ -191,60 +202,83 @@ mod_heatmap_analysis_server <- function(id,r=r){
     })
 
 
-    vecAnaly <- reactive({
-      if(input$m_analysis == "RunsTest"){
-        #fait le Run test en appelant un script c++
-        RunTV <- cpprunstest(mat(),"two.sided")
-        #traitement des resultats
-        RunTV[RunTV > 0] <- 0
-        vec <-(-1)*RunTV
-      }else if(input$m_analysis == "Phi"){
-        matrice <- mat()
-        #permet de calculer le coefficient Phi de la premiere ligne avec la suivante
-        T <- table(matrice[1,], matrice[2,])#fait un tableau de contingence
-        Tab2 = T/sum(T)#fait la moyenne
-        a = Tab2[1, 1]
-        b = Tab2[1, 2]
-        c = Tab2[2, 1]
-        d = Tab2[2, 2]
-        Phi = (a - (a + b) * (a + c))/sqrt((a + b) * (c + d) * (a + c) * (b + d)) #calcul de Phi
-        Vphi <- vector()
-        Vphi <-c(Phi)
-        #permet de calculer le coefficient Phi de la deuxieme ligne a l'avant derniere ligne.
-        Vphi <- append(Vphi, cppcorrNeighbor(matrice))
-        #permet de calculer le coefficient Phi de la derniere ligne avec la precedente
-        T <- table(matrice[nrow(matrice)-1,], matrice[nrow(matrice),])
-        Tab2 = T/sum(T)
-        a = Tab2[1, 1]
-        b = Tab2[1, 2]
-        c = Tab2[2, 1]
-        d = Tab2[2, 2]
-        Phi = (a - (a + b) * (a + c))/sqrt((a + b) * (c + d) * (a + c) * (b + d))
-        Vphi <- append(Vphi, Phi)
-      }else if(input$m_analysis == "CorrOrder"){
-        dMat <- matDist()
-        serdMat <- dMat[seriation::get_order(ser()), seriation::get_order(ser())]
-        mat <- matrix(1, ncol(serdMat),ncol(serdMat))
-        mat[which(row(mat)>col(mat))] <- -1
-        serdMat2 <- serdMat*mat
-        serdMat3 <- serdMat2 - serdMat2[,1]
-        OrdVec2 <- as.matrix(seq(0,(nrow(dMat)-1)))
-        cor <- cor(OrdVec2, t(serdMat3), method = "spearman") #correlation
-        vec<- abs(as.vector(cor))
-      }else{
-        TMdMat <- matDist()
-        TMdMat <- TMdMat[seriation::get_order(ser()), seriation::get_order(ser())]
-        Tmat <- matrix(1, ncol(TMdMat),ncol(TMdMat))
-        Tmat[which(row(Tmat)>col(Tmat))] <- -1
-        TMdMat2 <- TMdMat*Tmat
-        TMdMat3 <- TMdMat2 - TMdMat2[,1]
+    vecAnaly <- eventReactive(input$val_ha,{
+      hideFeedback(inputId="m_analysis")
+      tryCatch({
+        if(input$m_analysis == "RunsTest"){
+          id <- showNotification("Running RunsTest... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+          on.exit(removeNotification(id), add = TRUE)
+            #fait le Run test en appelant un script c++
+            RunTV <- cpprunstest(mat(),"two.sided")
+            #traitement des resultats
+            RunTV[RunTV > 0] <- 0
+            vec <-(-1)*RunTV
+            showFeedbackSuccess(inputId="m_analysis")
+            return(vec)
+        }else if(input$m_analysis == "Phi"){
+          id <- showNotification("Running Phi... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+          on.exit(removeNotification(id), add = TRUE)
+          matrice <- mat()
+          #permet de calculer le coefficient Phi de la premiere ligne avec la suivante
+          T <- table(matrice[1,], matrice[2,])#fait un tableau de contingence
+          Tab2 = T/sum(T)#fait la moyenne
+          a = Tab2[1, 1]
+          b = Tab2[1, 2]
+          c = Tab2[2, 1]
+          d = Tab2[2, 2]
+          Phi = (a - (a + b) * (a + c))/sqrt((a + b) * (c + d) * (a + c) * (b + d)) #calcul de Phi
+          Vphi <- vector()
+          Vphi <-c(Phi)
+          #permet de calculer le coefficient Phi de la deuxieme ligne a l'avant derniere ligne.
+          Vphi <- append(Vphi, cppcorrNeighbor(matrice))
+          #permet de calculer le coefficient Phi de la derniere ligne avec la precedente
+          T <- table(matrice[nrow(matrice)-1,], matrice[nrow(matrice),])
+          Tab2 = T/sum(T)
+          a = Tab2[1, 1]
+          b = Tab2[1, 2]
+          c = Tab2[2, 1]
+          d = Tab2[2, 2]
+          Phi = (a - (a + b) * (a + c))/sqrt((a + b) * (c + d) * (a + c) * (b + d))
+          Vphi <- append(Vphi, Phi)
+          showFeedbackSuccess(inputId="m_analysis")
+          return(Vphi)
+        }else if(input$m_analysis == "CorrOrder"){
+          id <- showNotification("Running CorrOrder... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+          on.exit(removeNotification(id), add = TRUE)
+          dMat <- matDist()
+          serdMat <- dMat[seriation::get_order(ser()), seriation::get_order(ser())]
+          mat <- matrix(1, ncol(serdMat),ncol(serdMat))
+          mat[which(row(mat)>col(mat))] <- -1
+          serdMat2 <- serdMat*mat
+          serdMat3 <- serdMat2 - serdMat2[,1]
+          OrdVec2 <- as.matrix(seq(0,(nrow(dMat)-1)))
+          cor <- cor(OrdVec2, t(serdMat3), method = "spearman") #correlation
+          vec<- abs(as.vector(cor))
+          showFeedbackSuccess(inputId="m_analysis")
+          return(vec)
+        }else{
+          id <- showNotification("Running ARorder... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+          on.exit(removeNotification(id), add = TRUE)
+          TMdMat <- matDist()
+          TMdMat <- TMdMat[seriation::get_order(ser()), seriation::get_order(ser())]
+          Tmat <- matrix(1, ncol(TMdMat),ncol(TMdMat))
+          Tmat[which(row(Tmat)>col(Tmat))] <- -1
+          TMdMat2 <- TMdMat*Tmat
+          TMdMat3 <- TMdMat2 - TMdMat2[,1]
 
-        Viar <- cppARorder(TMdMat3)
-        vec <- sqrt(abs(Viar))
-      }
+          Viar <- cppARorder(TMdMat3)
+          vec <- sqrt(abs(Viar))
+          showFeedbackSuccess(inputId="m_analysis")
+          return(vec)
+        }
+      }, error = function(e) {
+        showFeedback(inputId = "m_analysis", text = e$message, color = "#d9534f",
+                     icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
+                     session = shiny::getDefaultReactiveDomain())
+      })
     })
 
-    plot_hist <- eventReactive(input$val,{
+    plot_hist <- eventReactive(input$val_hahist,{
       hist(vecAnaly(), breaks = input$breaks, main = "Histogram of results vector")
     })
 
@@ -397,10 +431,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
                       col = fun_color(),
                       column_names_max_height = max_text_width(colnames(matrice)),
                       show_row_names = FALSE,
-                      row_names_gp = gpar(fontsize = 0.2 + 1/log10(nrow(matrice)),
-                                          col=aff_color()),
-                      column_names_gp = gpar(fontsize = 0.2 + 1/log10(ncol(matrice)),
-                                             col=aff_color()),
+                      row_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_row,
+                                                col=aff_color()),
+                      column_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_col,
+                                                   col=aff_color()),
                       #pour split
                       border = aff_color(),
                       heatmap_legend_param = list(title_gp = gpar(col=aff_color()), labels_gp = gpar(col=aff_color())),
@@ -426,10 +460,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
                       col = fun_color(),
                       column_names_max_height = max_text_width(colnames(matrice)),
                       show_row_names = FALSE,
-                      row_names_gp = gpar(fontsize = 0.2 + 1/log10(nrow(matrice)),
-                                          col=aff_color()),
-                      column_names_gp = gpar(fontsize = 0.2 + 1/log10(ncol(matrice)),
-                                             col=aff_color()),
+                      row_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_row,
+                                                col=aff_color()),
+                      column_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_col,
+                                                   col=aff_color()),
                       #pour split
                       border = aff_color(),
                       heatmap_legend_param = list(title_gp = gpar(col=aff_color()), labels_gp = gpar(col=aff_color())),
@@ -489,10 +523,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
                         col = fun_color(),
                         column_names_max_height = max_text_width(colnames(matrice)),
                         show_row_names = FALSE,
-                        row_names_gp = gpar(fontsize = 0.2 + 1/log10(nrow(matrice)),
-                                            col=aff_color()),
-                        column_names_gp = gpar(fontsize = 0.2 + 1/log10(ncol(matrice)),
-                                               col=aff_color()),
+                        row_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_row,
+                                                  col=aff_color()),
+                        column_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_col,
+                                                     col=aff_color()),
                         #pour split
                         border = aff_color(),
                         heatmap_legend_param = list(title_gp = gpar(col=aff_color()), labels_gp = gpar(col=aff_color())),
@@ -518,10 +552,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
                         col = fun_color(),
                         column_names_max_height = max_text_width(colnames(matrice)),
                         show_row_names = FALSE,
-                        row_names_gp = gpar(fontsize = 0.2 + 1/log10(nrow(matrice)),
-                                            col=aff_color()),
-                        column_names_gp = gpar(fontsize = 0.2 + 1/log10(ncol(matrice)),
-                                               col=aff_color()),
+                        row_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_row,
+                                                  col=aff_color()),
+                        column_names_gp = grid::gpar(fontsize = input$heatmap_fontsize_col,
+                                                     col=aff_color()),
                         #pour split
                         border = aff_color(),
                         heatmap_legend_param = list(title_gp = gpar(col=aff_color()), labels_gp = gpar(col=aff_color())),
