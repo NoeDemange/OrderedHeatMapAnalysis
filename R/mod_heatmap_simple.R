@@ -98,7 +98,7 @@ mod_heatmap_simple_server <- function(id, r=r){
     })
 
 
-    htplot <- eventReactive(input$val_a1,{
+    r$htplot <- eventReactive(input$val_a1,{
       req(r$fil_df)
       if(input$Dend_row == "No" && input$Dend_col == "No"){
         mat <- r$fil_df()
@@ -164,8 +164,8 @@ mod_heatmap_simple_server <- function(id, r=r){
 
 
     output$ht_simple <- renderPlot({
-      req(htplot)
-      htplot()
+      req(r$htplot)
+      r$htplot()
     })
 
     output$down <- downloadHandler(
@@ -175,7 +175,7 @@ mod_heatmap_simple_server <- function(id, r=r){
       # content is a function with argument file. content writes the plot to the device
       content = function(file) {
         grDevices::pdf(file) # open the pdf device
-        plot(htplot())
+        plot(r$htplot())
         grDevices::dev.off()  # turn the device off
       })
 

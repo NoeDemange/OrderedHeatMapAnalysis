@@ -419,8 +419,8 @@ mod_heatmap_analysis_server <- function(id,r=r){
     })
 
 
-    htsplot <- eventReactive(input$val_a3,{
-      req(r$M_ser)
+    r$htaplot <- eventReactive(input$val_a3,{
+      #req(r$M_ser)
       if(input$roworcol == "Row"){
         #multiplication du vecteur d'analyse de la matrice avec la matrice permettant la coloration
         VecIndStruc <- vecAnaly()
@@ -445,11 +445,11 @@ mod_heatmap_analysis_server <- function(id,r=r){
         #dessine la Heatmap avec en fond la couleur choisie
         draw(HM, background = input$bg_color)
         #Permet de faire les cadres des groupes >Ssup ou <Sinf
-        for(s in levels(fsplit())){
-          decorate_annotation("foo",{grid.lines(unit(c(input$Ssup,input$Ssup),"native"),c(0,1), gp = gpar(col="yellow"))
-            grid.lines(unit(c(input$Sinf,input$Sinf),"native"),c(0,1), gp = gpar(col="yellow"))
-          }, slice = s)
-        }
+        # for(s in levels(fsplit())){
+        #   decorate_annotation("foo",{grid.lines(unit(c(input$Ssup,input$Ssup),"native"),c(0,1), gp = gpar(col="yellow"))
+        #     grid.lines(unit(c(input$Sinf,input$Sinf),"native"),c(0,1), gp = gpar(col="yellow"))
+        #   }, slice = s)
+        # }
       }else{
         #multiplication du vecteur d'analyse de la matrice avec la matrice permettant la coloration
         VecIndStruc <- vecAnaly()
@@ -474,6 +474,24 @@ mod_heatmap_analysis_server <- function(id,r=r){
         #dessine la Heatmap avec en fond la couleur choisie
         draw(HM, background = input$bg_color)
         #Permet de faire les cadres des groupes >Ssup ou <Sinf
+        # for(s in levels(fsplit())){
+        #   decorate_annotation("foo",{grid.lines(c(0,1), unit(c(input$Ssup,input$Ssup),"native"), gp = gpar(col="yellow"))
+        #     grid.lines(c(0,1),unit(c(input$Sinf,input$Sinf),"native"), gp = gpar(col="yellow"))
+        #   }, slice = s)
+        # }
+      }
+    })
+
+    htaplot_Dec <- eventReactive(r$htaplot(),{
+      if(input$roworcol == "Row"){
+        r$htaplot()
+        for(s in levels(fsplit())){
+          decorate_annotation("foo",{grid.lines(unit(c(input$Ssup,input$Ssup),"native"),c(0,1), gp = gpar(col="yellow"))
+            grid.lines(unit(c(input$Sinf,input$Sinf),"native"),c(0,1), gp = gpar(col="yellow"))
+          }, slice = s)
+        }
+      }else{
+        r$htaplot()
         for(s in levels(fsplit())){
           decorate_annotation("foo",{grid.lines(c(0,1), unit(c(input$Ssup,input$Ssup),"native"), gp = gpar(col="yellow"))
             grid.lines(c(0,1),unit(c(input$Sinf,input$Sinf),"native"), gp = gpar(col="yellow"))
@@ -499,8 +517,8 @@ mod_heatmap_analysis_server <- function(id,r=r){
     })
 
     output$ht_split <- renderPlot({
-      req(htsplot)
-      htsplot()
+      req(htaplot_Dec)
+      htaplot_Dec()
     })
 
     output$clust <- renderPrint({

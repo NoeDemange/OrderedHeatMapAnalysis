@@ -3,6 +3,7 @@
 export(run_app)
 import(ComplexHeatmap)
 import(DendSer)
+import(InteractiveComplexHeatmap)
 import(grid)
 import(seriation)
 import(shiny)

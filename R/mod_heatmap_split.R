@@ -407,7 +407,7 @@ mod_heatmap_split_server <- function(id, r=r){
       draw(Heatmapsplit, background = input$bg_color)
     })
 
-    htsplot <- eventReactive(input$val_a2,{
+    r$htsplot <- eventReactive(input$val_a2,{
       if(input$split_row == "No" && input$split_col == "No"){
         textplot("Choose to split on row or column,\n or go to Heatmap\n",cex=1.5)
       }
@@ -450,8 +450,8 @@ mod_heatmap_split_server <- function(id, r=r){
 
 ##output
     output$ht_split <- renderPlot({
-      req(htsplot)
-      htsplot()
+      req(r$htsplot)
+      r$htsplot()
     })
 
     output$clust <- renderPrint({
@@ -465,7 +465,7 @@ mod_heatmap_split_server <- function(id, r=r){
       # content is a function with argument file. content writes the plot to the device
       content = function(file) {
         grDevices::pdf(file) # open the pdf device
-        plot(htsplot())
+        plot(r$htsplot())
         grDevices::dev.off()  # turn the device off
       })
 

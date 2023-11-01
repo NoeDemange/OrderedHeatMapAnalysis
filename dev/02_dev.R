@@ -38,6 +38,7 @@ usethis::use_package("ecp")
 usethis::use_package("graphics")
 usethis::use_package("tseries")
 usethis::use_package("shinyFeedback")
+usethis::use_package("InteractiveComplexHeatmap")
 
 ## Add modules ----
 ## Create a module infrastructure in R/

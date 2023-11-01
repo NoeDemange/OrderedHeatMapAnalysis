@@ -25,6 +25,7 @@ Imports:
     graphics,
     grDevices,
     grid,
+    InteractiveComplexHeatmap,
     seriation,
     shiny (>= 1.7.3),
     shinycssloaders,

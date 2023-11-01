@@ -20,6 +20,7 @@ app_ui <- function(request) {
                             menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
                             menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
                             menuItem("Data Analysis Heatmap", tabName = "ht_analysis", icon = icon("fas fa-tasks")),
+                            menuItem("Interactive Heatmap", tabName = "ht_inter", icon = icon("fas fa-magnifying-glass-chart")),
                             menuItem("Information", tabName = "information", icon = icon("fas fa-info-circle")),
                             style = "font-size:18px"
                           )
@@ -42,6 +43,26 @@ app_ui <- function(request) {
                               tabItem(tabName= "ht_analysis",
                                       mod_heatmap_analysis_ui("heatmap_analysis_1")
                               ),
+                              tabItem(tabName= "ht_inter",
+                                      box(title = "Interactive Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
+                                          selectInput("interHT_typ","With which type of Heatmap do you want to interact",c("Heatmap","Splitted Heatmap", "Data Analysis Heatmap"),selected="Heatmap"),
+                                          helpText(
+                                            "Remember to set the background color to white for best results"
+                                          ),
+                                          actionButton("val_interht", "valider"),
+                                          InteractiveComplexHeatmapOutput("HT_interactive"),
+                                          #downloadButton(ns("down"), label = "Download the plot", style="color:#000000; display: block"),
+                                          width=12
+                                      ),
+                                      tags$style("
+                                          .content-wrapper, .right-side {
+                                              overflow-x: auto;
+                                          }
+                                          .content {
+                                              min-width:1500px;
+                                          }
+                                      ")
+                              ),
                               tabItem(tabName= "information",
                                       mod_information_ui("information_1")
                               )
@@ -59,6 +80,7 @@ app_ui <- function(request) {
 #' resources inside the Shiny application.
 #'
 #' @import shiny
+#' @import InteractiveComplexHeatmap
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
 golem_add_external_resources <- function() {
