@@ -88,6 +88,11 @@ mod_heatmap_analysis_ui <- function(id){
         column(6,
                numericInput(ns("Sinf"), "Lower", value = 0),
         ),
+        helpText("Download matrix"),
+        radioButtons(ns("todown_data_bound"), "Choose the data to donwload",
+                            choices = list("data greater or equal than the upper bound", "data lower or equal than the lower bound", "data between thresholds"),
+                            selected = "data greater or equal than the upper bound",inline = TRUE),
+        downloadButton(ns("down_mat_ana"), label = "Download data", style="color:#000000; display: block"),
         helpText("Display the significant structured zones (structured zone) or their correspondence to the bounds (bound)"),
         radioButtons(ns("methodshowsplit"), "Choose",
                      choices = list("structured zone", "bound"),
@@ -277,6 +282,44 @@ mod_heatmap_analysis_server <- function(id,r=r){
                      session = shiny::getDefaultReactiveDomain())
       })
     })
+
+    #matrice issue de l'analyse
+    mat_ana <- reactive({
+      req(vecAnaly)
+      vec <- vecAnaly()
+      mat <- as.matrix(r$M_ser())
+      if(input$roworcol == "Row"){
+        if(input$todown_data_bound == "data greater or equal than the upper bound"){
+          mat_fil <- mat[which(vec>=input$Ssup),]
+        }else if(input$todown_data_bound == "data lower or equal than the lower bound"){
+          mat_fil <- mat[which(vec<=input$Sinf),]
+        }else{
+          mat_int <- mat[which(vec<input$Ssup),]
+          vec_int <- vec[which(vec<input$Ssup)]
+          mat_fil <- mat_int[which(vec_int>input$Sinf),]
+        }
+      }else{
+        if(input$todown_data_bound == "data greater or equal than the upper bound"){
+          mat_fil <- mat[,which(vec>=input$Ssup)]
+        }else if(input$todown_data_bound == "data lower or equal than the lower bound"){
+          mat_fil <- mat[,which(vec<=input$Sinf)]
+        }else{
+          mat_int <- mat[,which(vec<input$Ssup)]
+          vec_int <- vec[which(vec<input$Ssup)]
+          mat_fil <- mat_int[,which(vec_int>input$Sinf)]
+        }
+      }
+      return(mat_fil)
+    })
+
+    output$down_mat_ana <- downloadHandler(
+      filename = function() {
+        paste0("Matrix_of_filter_data_analysed.csv")
+      },
+      content = function(file) {
+        write.csv(mat_ana(),file)
+      }
+    )
 
     plot_hist <- eventReactive(input$val_hahist,{
       hist(vecAnaly(), breaks = input$breaks, main = "Histogram of results vector")
