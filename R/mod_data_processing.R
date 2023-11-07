@@ -106,10 +106,10 @@ mod_data_processing_server <- function(id, r=r){
     })
 
     observeEvent(data_tr(),{
-      updateNumericInput(inputId = "max_zero_col", max = nrow(data_tr()), min = 0, value = nrow(data_tr()))
-      updateNumericInput(inputId = "max_one_col", max = nrow(data_tr()), min = 0, value = nrow(data_tr()))
-      updateNumericInput(inputId = "max_zero_row", max = ncol(data_tr()), min = 0, value = ncol(data_tr()))
-      updateNumericInput(inputId = "max_one_row", max = ncol(data_tr()), min = 0, value = ncol(data_tr()))
+      updateNumericInput(inputId = "max_zero_col", max = nrow(data_tr()), min = 0, value = nrow(data_tr())-1)
+      updateNumericInput(inputId = "max_one_col", max = nrow(data_tr()), min = 0, value = nrow(data_tr())-1)
+      updateNumericInput(inputId = "max_zero_row", max = ncol(data_tr()), min = 0, value = ncol(data_tr())-1)
+      updateNumericInput(inputId = "max_one_row", max = ncol(data_tr()), min = 0, value = ncol(data_tr())-1)
     })
 
     #mettre les donnees apres filtrage, filtrage en fonction binaire ou non

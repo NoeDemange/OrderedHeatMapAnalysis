@@ -18,8 +18,8 @@ app_ui <- function(request) {
                             menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
                             menuItem("Data Processing", tabName = "tdon", icon = icon("fas fa-table")),
                             menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
-                            menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
                             menuItem("Data Analysis Heatmap", tabName = "ht_analysis", icon = icon("fas fa-tasks")),
+                            menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
                             menuItem("Interactive Heatmap", tabName = "ht_inter", icon = icon("fas fa-magnifying-glass-chart")),
                             menuItem("Information", tabName = "information", icon = icon("fas fa-info-circle")),
                             style = "font-size:18px"
