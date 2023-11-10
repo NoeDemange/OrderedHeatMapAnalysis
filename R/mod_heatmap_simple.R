@@ -12,6 +12,7 @@
 #' @import stats
 #' @import seriation
 #' @import viridis
+#' @import dendextend
 #' @importFrom shiny NS tagList
 mod_heatmap_simple_ui <- function(id){
   ns <- NS(id)
@@ -117,9 +118,11 @@ mod_heatmap_simple_server <- function(id, r=r){
       }else if(input$Dend_row == "No" && input$Dend_col == "Yes"){
         mat <- r$fil_df()
         mat <- mat[seriation::get_order(r$HC_l()),]
+        dend <- stats::as.dendrogram(r$HCNotPer_c())
+        dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_c())
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                  cluster_rows = FALSE,
-                                                 cluster_columns = stats::as.dendrogram(r$HC_c()),
+                                                 cluster_columns = dend,
                                                  column_dend_gp = gpar(col = aff_color()),
                                                  col = fun_color(),
                                                  column_names_max_height = max_text_width(colnames(r$fil_df())),
@@ -132,8 +135,10 @@ mod_heatmap_simple_server <- function(id, r=r){
       }else if(input$Dend_row == "Yes" && input$Dend_col == "No"){
         mat <- r$fil_df()
         mat <- mat[, seriation::get_order(r$HC_c())]
+        dend <- stats::as.dendrogram(r$HCNotPer_l())
+        dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_l())
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
-                                                 cluster_rows = stats::as.dendrogram(r$HC_l()),
+                                                 cluster_rows = dend,
                                                  row_dend_gp = gpar(col = aff_color()),
                                                  cluster_columns = FALSE,
                                                  col = fun_color(),
@@ -145,10 +150,14 @@ mod_heatmap_simple_server <- function(id, r=r){
                                                  heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
         )
       }else{
+        dend_l <- stats::as.dendrogram(r$HCNotPer_l())
+        dendextend::order.dendrogram(dend_l) <- seriation::get_order(r$HC_l())
+        dend_c <- stats::as.dendrogram(r$HCNotPer_c())
+        dendextend::order.dendrogram(dend_c) <- seriation::get_order(r$HC_c())
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
-                                               cluster_rows = stats::as.dendrogram(r$HC_l()),
+                                               cluster_rows = dend_l,
                                                row_dend_gp = gpar(col = aff_color()),
-                                               cluster_columns = stats::as.dendrogram(r$HC_c()),
+                                               cluster_columns = dend_c,
                                                column_dend_gp = gpar(col = aff_color()),
                                                col = fun_color(),
                                                column_names_max_height = max_text_width(colnames(r$fil_df())),

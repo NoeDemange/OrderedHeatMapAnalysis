@@ -197,7 +197,7 @@ mod_data_processing_server <- function(id, r=r){
       }
     })
 
-    r$HC_l <- eventReactive(input$val_DP,{
+    r$HCNotPer_l <- eventReactive(input$val_DP,{
       id <- showNotification("Running row HC... Wait", duration = NULL, closeButton = FALSE, type = "warning")
       on.exit(removeNotification(id), add = TRUE)
       tryCatch({
@@ -206,9 +206,40 @@ mod_data_processing_server <- function(id, r=r){
         } else{
           HC <- stats::as.hclust(cluster::diana(r$distm_ml())) #HC avec diana du package cluster
         }
+        return(HC)
+      }, error = function(e) {
+        showFeedback(inputId = "inHC", text = e$message, color = "#d9534f",
+                     icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
+                     session = shiny::getDefaultReactiveDomain())
+      })
+    })
+
+    r$HC_l <- eventReactive(input$val_DP,{
+      id <- showNotification("Running row seriation... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+      on.exit(removeNotification(id), add = TRUE)
+      tryCatch({
+        req(r$HCNotPer_l)
+        HC <- r$HCNotPer_l()
         if(input$ser=="Oui"){
-            OrdSer <- DendSer::DendSer(HC, r$distm_ml(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
-            HC <-  seriation::permute(HC, OrdSer)
+          OrdSer <- DendSer::DendSer(HC, r$distm_ml(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
+          HC <-  seriation::permute(HC, OrdSer)
+        }
+        return(HC)
+      }, error = function(e) {
+        showFeedback(inputId = "inHC", text = paste("Seriation:",e$message,sep=" "), color = "#d9534f",
+                     icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
+                     session = shiny::getDefaultReactiveDomain())
+      })
+    })
+
+    r$HCNotPer_c <- eventReactive(input$val_DP,{
+      id <- showNotification("Running column HC... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+      on.exit(removeNotification(id), add = TRUE)
+      tryCatch({
+        if(input$inHC != "diana"){
+          HC <- stats::hclust(r$distm_mc(), method= input$inHC)
+        } else{
+          HC <- stats::as.hclust(cluster::diana(r$distm_mc())) #HC avec diana du package cluster
         }
         return(HC)
       }, error = function(e) {
@@ -219,21 +250,18 @@ mod_data_processing_server <- function(id, r=r){
     })
 
     r$HC_c <- eventReactive(input$val_DP,{
-      id <- showNotification("Running column HC... Wait", duration = NULL, closeButton = FALSE, type = "warning")
+      id <- showNotification("Running column seriation... Wait", duration = NULL, closeButton = FALSE, type = "warning")
       on.exit(removeNotification(id), add = TRUE)
       tryCatch({
-        if(input$inHC != "diana"){
-          HC <- stats::hclust(r$distm_mc(), method= input$inHC)
-        } else{
-          HC <- stats::as.hclust(cluster::diana(r$distm_mc())) #HC avec diana du package cluster
-        }
+        req(r$HCNotPer_c)
+        HC <- r$HCNotPer_c()
         if(input$ser=="Oui"){
-            OrdSer <- DendSer::DendSer(HC, r$distm_mc(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
-            HC <-  seriation::permute(HC, OrdSer)
+          OrdSer <- DendSer::DendSer(HC, r$distm_mc(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
+          HC <-  seriation::permute(HC, OrdSer)
         }
         return(HC)
       }, error = function(e) {
-        showFeedback(inputId = "inHC", text = e$message, color = "#d9534f",
+        showFeedback(inputId = "inHC", text = paste("Seriation:",e$message,sep=" "), color = "#d9534f",
                      icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
                      session = shiny::getDefaultReactiveDomain())
       })

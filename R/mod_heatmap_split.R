@@ -9,7 +9,7 @@
 #' @import shinycssloaders
 #' @import ComplexHeatmap
 #' @importFrom gplots textplot
-#' @importFrom dendextend color_branches
+#' @import dendextend
 #' @importFrom dynamicTreeCut cutreeHybrid
 #' @importFrom circlize colorRamp2
 #' @importFrom grDevices rainbow
@@ -188,7 +188,8 @@ mod_heatmap_split_server <- function(id, r=r){
          if(input$split_row == "No" && input$split_col == "Yes"){
           mat <- r$fil_df()
           mat <- mat[seriation::get_order(r$HC_l()),]
-          dend <- stats::as.dendrogram(r$HC_c())
+          dend <- stats::as.dendrogram(r$HCNotPer_c())
+          dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_c())
           dend <- color_branches(dend, k = input$Kcol)
           Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                    cluster_rows = FALSE,
@@ -207,7 +208,8 @@ mod_heatmap_split_server <- function(id, r=r){
         }else if(input$split_row == "Yes" && input$split_col == "No"){
           mat <- r$fil_df()
           mat <- mat[, seriation::get_order(r$HC_c())]
-          dend <- stats::as.dendrogram(r$HC_l())
+          dend <- stats::as.dendrogram(r$HCNotPer_l())
+          dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_l())
           dend <- color_branches(dend, k = input$Krow)
           Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                    cluster_rows = dend,
@@ -224,9 +226,11 @@ mod_heatmap_split_server <- function(id, r=r){
                                                    heatmap_legend_param = list(title_gp = gpar(col=aff_color()),labels_gp = gpar(col=aff_color())),
           )
         }else{
-          dend_row <- stats::as.dendrogram(r$HC_l())
+          dend_row <- stats::as.dendrogram(r$HCNotPer_l())
+          dendextend::order.dendrogram(dend_row) <- seriation::get_order(r$HC_l())
           dend_row <- color_branches(dend_row, k = input$Krow)
-          dend_col <- stats::as.dendrogram(r$HC_c())
+          dend_col <- stats::as.dendrogram(r$HCNotPer_c())
+          dendextend::order.dendrogram(dend_col) <- seriation::get_order(r$HC_c())
           dend_col <- color_branches(dend_col, k = input$Kcol)
           Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
                                                    cluster_rows = dend_row,
