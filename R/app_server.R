@@ -18,16 +18,19 @@ app_server <- function(input, output, session) {
   mod_heatmap_analysis_server("heatmap_analysis_1",r=r) # r$htaplot
   mod_information_server("information_1")
 
+  output$inf_white <- renderText({paste("Background should be set to 'white' in the",input$interHT_typ,"section for better visualization of labels."
+  )})
+
   htplot_print <- eventReactive(input$val_interht,{
-    if(input$interHT_typ == "Heatmap"){
+    if(input$interHT_typ == "Heatmap Ordering"){
       req(r$htplot)
       return(r$htplot())
     }
-    else if(input$interHT_typ == "Splitted Heatmap"){
+    else if(input$interHT_typ == "Heatmap Partitioning"){
       req(r$htsplot)
       return(r$htsplot())
     }
-    else if(input$interHT_typ == "Data Analysis Heatmap"){
+    else if(input$interHT_typ == "Heatmap Ordering Index Analysis"){
       req(r$htaplot)
       return(r$htaplot())
     }

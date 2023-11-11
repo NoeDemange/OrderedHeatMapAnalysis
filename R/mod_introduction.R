@@ -26,7 +26,7 @@ mod_introduction_ui <- function(id){
           column(3,tags$div(
             br(),
             tags$h4(
-              tags$a(href="https://www.uvsq.fr/", "Université Versailles St Quentin", target="_blank"),
+              tags$a(href="https://www.uvsq.fr/", "Universit\u00e9 Versailles St Quentin", target="_blank"),
             ),
             tags$figure(
               tags$img(
@@ -41,7 +41,7 @@ mod_introduction_ui <- function(id){
             br(),
             tags$h4(
               "Atelier de bio informatique - ",
-              tags$a(href="http://isyeb.mnhn.fr/fr", "Institut de Systématique, Évolution, Biodiversité - UMR 7205", target="_blank"),
+              tags$a(href="http://isyeb.mnhn.fr/fr", "Institut de Syst\u00e9matique, \u00c9volution, Biodiversit\u00e9 - UMR 7205", target="_blank"),
             ),
             ),
           ),

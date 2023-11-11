@@ -9,7 +9,16 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-Optimised direct visualization and analysis of matrix data structure.
+OrderedHeatMapAnalysis (OHMA) is a direct data analysis framework
+allowing to simultaneously visualize and analyze the structure of
+complex datasets. An optimized seriation of rows and columns of the
+input data table is performed, resulting in a mapping of the whole
+dataset into an ordered heatmap. Following analysis of the ordered
+heatmap structure directly highlights submatrix of regularly ordered
+data. Subsequently, an exhaustive identification of biculsters laying in
+the subspaces of the dataset can be performed, and their mutual
+relationships can easily be characterized. This method allows a
+straitforwrard and deep exploration of all dimensions of the dataset.
 
 ## Installation
 
@@ -33,7 +42,7 @@ OrderedHeatMapAnalysis::run_app(options=list("launch.browser"=TRUE))
 ## Credits
 
 This app was developed by [Noe Demange](https://github.com/NoeDemange).
-It was developed for and is maintained by [Guillaume
+Contact the maintainer of the app, [Guillaume
 Sapriel](https://orcid.org/0000-0003-0549-9376). It is deployed on the
 [MIGALE platform](https://migale.inrae.fr/) by [Cédric
 Midoux](https://orcid.org/0000-0002-7964-0929). We are grateful to the

@@ -22,6 +22,14 @@ mod_heatmap_split_ui <- function(id){
     fluidPage(
       box(title = "Settings", status = "primary", solidHeader = TRUE, collapsible = TRUE,
 ##ui for split
+          footer = tags$div(
+            "* James, N. A., & Matteson, D. S. (2015). ecp: An R Package for Nonparametric Multiple Change Point Analysis of Multivariate Data. Journal of Statistical Software, 62(7), 1-25.",
+            tags$a(href="https://doi.org/10.18637/jss.v062.i07","https://doi.org/10.18637/jss.v062.i07", target="_blank"),
+            br(),
+            "** Peter Langfelder, Bin Zhang, Steve Horvath, Defining clusters from a hierarchical cluster tree: the Dynamic Tree Cut package for R, Bioinformatics, Volume 24, Issue 5, March 2008, Pages 719-720,",
+            tags$a(href="https://doi.org/10.1093/bioinformatics/btm563", "https://doi.org/10.1093/bioinformatics/btm563", target="_blank"),
+          ),
+          helpText(h4("These methods allow to partition the heatmap in zones separated by splits within rows and/or columns, according to a clustering (by cluster) or segmentation (multiple change point) methods. Subsequent partitioning grid allows to identify submatrix of similar pattern and identify biculsters.")),
           helpText(h3("Split")),
           column(3,
                  radioButtons(ns("split_row"), "Row",
@@ -36,17 +44,17 @@ mod_heatmap_split_ui <- function(id){
                  )
           ),
           radioButtons(ns("typ_split"),"Type of Split",
-                       choiceNames = list("By cluster","By multiple change-point (segmentation)"),
+                       choiceNames = list("By cluster","By multiple change-point (segmentation estimation from ecp R package *)"),
                        choiceValues = list("cluster", "ecp"),
                        selected = "cluster",inline = TRUE),
-          #Ajout mise à jour pour afficher choix pour donner binaire ou donner numérique, voir mastering shiny 10.2.1 Conditional UI
+          #Ajout mise a jour pour afficher choix pour donner binaire ou donner numerique, voir mastering shiny 10.2.1 Conditional UI
           #Tabs pour afficher mode cluster ou point de transition
           parameter_tabs <- tabsetPanel(
             id = ns("params"),
             type = "hidden",
             tabPanel("cluster",
                      radioButtons(ns("meth_split"),"Methode of Split",
-                                  choices = list("cutree","cutreeHybrid"),
+                                  choices = list("cutree","cutreeHybrid (from dynamicTree Cut method R package **)"),
                                   selected = "cutree",inline = TRUE),
                      #tabs pour cutree ou cutreeHybrid
                      parameter_tabs <- tabsetPanel(
@@ -64,7 +72,7 @@ mod_heatmap_split_ui <- function(id){
                                              selected = "Yes",inline = TRUE
                                 )
                        ),
-                       tabPanel("cutreeHybrid",
+                       tabPanel("cutreeHybrid (from dynamicTree Cut method R package **)",
                                 column(6,
                                   helpText(h4("Row")),
                                   numericInput(ns("minsize_row"), "MinClusterSize", value = 1, min = 1),
@@ -82,12 +90,12 @@ mod_heatmap_split_ui <- function(id){
                      column(6,
                             helpText(h4("Row")),
                             numericInput(ns("ecp_minsize_row"), "MinClusterSize", value = 1, min = 1),
-                            numericInput(ns("siglvl_row"), "Significant level", value = 0.05, min = 0, max = 1)
+                            numericInput(ns("siglvl_row"), "p-value", value = 0.05, min = 0, max = 1)
                      ),
                      column(6,
                             helpText(h4("Column")),
                             numericInput(ns("ecp_minsize_col"), "MinClusterSize", value = 1, min = 1),
-                            numericInput(ns("siglvl_col"), "Significant level", value = 0.05, min = 0, max = 1)
+                            numericInput(ns("siglvl_col"), "p-value", value = 0.05, min = 0, max = 1)
                      ),
             )
         ),
@@ -107,7 +115,7 @@ mod_heatmap_split_ui <- function(id){
             selectInput(ns("bg_color"),"Background color",c("white","black"),selected="black")
             ),
           column(12,
-            textInput(ns("legend_name"),"Enter a legend name",value = "Heatmap"),
+            textInput(ns("legend_name"),"Enter legend name",value = "value"),
           ),
           column(6,
                  numericInput(ns("heatmap_fontsize_col"), "Column fontsize", value = 4, min = 0, max = 100, step = 0.1),
@@ -116,17 +124,17 @@ mod_heatmap_split_ui <- function(id){
                  numericInput(ns("heatmap_fontsize_row"), "Row fontsize", value = 4, min = 0, max = 100, step = 0.1),
           ),
           column(12,
-            actionButton(ns("val_a2"), "valider"),
+            actionButton(ns("val_a2"), "Validate"),
           ),
           width=12
       ),
       box(title = "Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
           shinycssloaders::withSpinner(plotOutput(ns("ht_split"), height = "600px")),
           downloadButton(ns("down"), label = "Download the plot", style="color:#000000; display: block"),
-          width=10
+          width=12
       ),
 
-box(title = "clusters or biclusters", status = "success", solidHeader = TRUE,
+box(title = "Segmentation grid components", status = "success", solidHeader = TRUE,
     shinycssloaders::withSpinner(verbatimTextOutput(ns("clust"))),
     downloadButton(ns("down_data"), label = "Download clusters", style="color:#000000; display: block"),
     width=12)

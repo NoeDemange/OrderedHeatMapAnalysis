@@ -21,6 +21,11 @@ mod_heatmap_analysis_ui <- function(id){
     fluidPage(
       box(title = "Settings", status = "primary", solidHeader = TRUE, collapsible = TRUE,
           ##ui for analysis
+          footer = tags$div(
+            "* James, N. A., & Matteson, D. S. (2015). ecp: An R Package for Nonparametric Multiple Change Point Analysis of Multivariate Data. Journal of Statistical Software, 62(7), 1-25.",
+            tags$a(href="https://doi.org/10.18637/jss.v062.i07", "https://doi.org/10.18637/jss.v062.i07", target="_blank"),
+          ),
+          helpText(h4("Several index are used to estimate the structuration level of the rows or columns in the ordered heatmap.")),
           radioButtons(ns("roworcol"), "Row or column analysis?",
                         choices = list("Row", "Column"),
                         selected = "Row",inline = TRUE),
@@ -32,44 +37,46 @@ mod_heatmap_analysis_ui <- function(id){
             id = ns("params"),
             type = "hidden",
             tabPanel("RunsTest",
-                     helpText("Expliquer methode RunsTest"),
+                     helpText(h4("Runs test (Wald-Wolfowitz) estimates the degree of structuration of row or columns into consistent data blocks.")),
 
             ),
             tabPanel("Phi",
-                     helpText("Expliquer methode Phi"),
+                     helpText(h4("Phi test indicates the degree of correlation (Phi coefficient) of each row/column with its closest neighbor.")),
 
             ),
             tabPanel("CorrOrder",
-                     helpText("Expliquer methode CorrOrder"),
+                     helpText(h4("CorrOrder indicate the degree of inconsistency of the global data ordering for each row/column by assessing ranks and distances mutual consistency by rank correlation method (Spearman).")),
 
             ),
             tabPanel("ARorder",
-                     helpText("Expliquer methode ARorder"),
+                     helpText(h4("ARorder indicate the degree of inconsistency of the global data ordering for each row/column by assessing ranks and distances mutual consistency by anti-robinsons events count (see Michael Hahsler, An experimental comparison of seriation methods for one-mode two-way data, European Journal of Operational Research, Volume 257, Issue 1).")),
 
             )
           ),
         column(12,
-               actionButton(ns("val_ha"), "valider"),
+               actionButton(ns("val_ha"), "Validate"),
         ),
-        numericInput(ns("breaks"), "Histogram Breaks", value = 10, min = 1),
+        helpText(h4("An histogram of index distribution is represented below in order to manually set the  index thresholds characterizing well/bad ordered segments of the matrix.")),
+        numericInput(ns("breaks"), "Ordering index distribution : Histogram breaks number", value = 10, min = 1),
         column(12,
-          actionButton(ns("val_hahist"), "valider"),
+          actionButton(ns("val_hahist"), "Validate"),
         ),
         helpText(h3("Histogram")),
         shinycssloaders::withSpinner(plotOutput(ns("hist"), height = "600px")),
         downloadButton(ns("down_hist"), label = "Download the histogram", style="color:#000000; display: block"),
         downloadButton(ns("down_vec"), label = "Download the results vector", style="color:#000000; display: block"),
-        helpText(h3("Split signifiant areas")),
-        helpText("Splits are made by multiple change-point analysis from the e.divisive function from ecp"),
+        helpText(h3("Define segments according to ordering index")),
+        helpText("Segments are defined by multiple change-point analysis from the e.divisive function from ecp R package *"),
         column(6,
-               numericInput(ns("ecp_minsize"), "MinClusterSize", value = 3, min = 1)
+               numericInput(ns("ecp_minsize"), "min size of segments", value = 3, min = 1)
         ),
         column(6,
-               numericInput(ns("siglvl"), "Significant level", value = 0.05, min = 0, max = 1)
+               numericInput(ns("siglvl"), "p-value", value = 0.05, min = 0, max = 1)
         ),
-        helpText("Use the results of e.divisive (transition) or the results of a student test on structured zones means (mean)"),
+        helpText("Define segments of similar ordering index value by transition point method (transition), and eventually confirm significant difference between segments mean by a student test."),
         radioButtons(ns("methodSplit"), "Choose",
-                     choices = list("transition", "mean"),
+                     choiceValues = list("transition", "mean"),
+                     choiceNames = list("Transition points  (ecp)", "Transition points (ecp) + significant difference between segments mean (t-test)"),
                      selected = "transition",inline = TRUE),
         parameter_tabs <- tabsetPanel(
           id = ns("params_msplit"),
@@ -79,9 +86,8 @@ mod_heatmap_analysis_ui <- function(id){
           tabPanel("mean",
                    numericInput(ns("conflvl"), "Confidence level of t.test", value = 0.95, min = 0, max = 1),
           )),
-        helpText("Define the upper and lower bounds at which the average of a structured zone is significant.
-                 If you have an error, it is that the area averages are between the bounds, please change the values.
-                 By default Lower is at the first quartile and Upper is at the third quartile."),
+        helpText(h3("display colored labels highlighting segments above or under a certain threshold (on average)."),
+                 "Define thresholds :"),
         column(6,
                numericInput(ns("Ssup"), "Upper", value = 0),
                ),
@@ -90,13 +96,13 @@ mod_heatmap_analysis_ui <- function(id){
         ),
         helpText("Download matrix"),
         radioButtons(ns("todown_data_bound"), "Choose the data to donwload",
-                            choices = list("data greater or equal than the upper bound", "data lower or equal than the lower bound", "data between thresholds"),
-                            selected = "data greater or equal than the upper bound",inline = TRUE),
+                            choices = list("segments greater or equal than the upper bound", "segments lower or equal than the lower bound", "segments between thresholds"),
+                            selected = "segments greater or equal than the upper bound",inline = TRUE),
         downloadButton(ns("down_mat_ana"), label = "Download data", style="color:#000000; display: block"),
-        helpText("Display the significant structured zones (structured zone) or their correspondence to the bounds (bound)"),
+        helpText("Graphic display of selected segments"),
         radioButtons(ns("methodshowsplit"), "Choose",
-                     choices = list("structured zone", "bound"),
-                     selected = "structured zone",inline = TRUE),
+                     choices = list("different color for each segment", "only two colors. One for ordered segments, another for disordered segments."),
+                     selected = "different color for each segment",inline = TRUE),
 
 
         ##ui for heatmap
@@ -108,14 +114,14 @@ mod_heatmap_analysis_ui <- function(id){
         column(6,
                selectInput(ns("bg_color"),"Background color",c("white","black"),selected="black")
         ),
-        textInput(ns("legend_name"),"Enter a legend name",value = "Heatmap"),
+        textInput(ns("legend_name"),"Enter legend name",value = "Ordering Index"),
         column(6,
                numericInput(ns("heatmap_fontsize_col"), "Column fontsize", value = 4, min = 0, max = 100, step = 0.1),
         ),
         column(6,
                numericInput(ns("heatmap_fontsize_row"), "Row fontsize", value = 4, min = 0, max = 100, step = 0.1),
         ),
-        actionButton(ns("val_a3"), "valider"),
+        actionButton(ns("val_a3"), "Validate"),
         width=12
       ),
       box(title = "Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
@@ -124,7 +130,7 @@ mod_heatmap_analysis_ui <- function(id){
           width=10
       ),
 
-      box(title = "Zone", status = "success", solidHeader = TRUE,
+      box(title = "Segments of similar order index", status = "success", solidHeader = TRUE,
           shinycssloaders::withSpinner(verbatimTextOutput(ns("clust"))),
           downloadButton(ns("down_data"), label = "Download zones", style="color:#000000; display: block"),
           width=12)
@@ -289,9 +295,9 @@ mod_heatmap_analysis_server <- function(id,r=r){
       vec <- vecAnaly()
       mat <- as.matrix(r$M_ser())
       if(input$roworcol == "Row"){
-        if(input$todown_data_bound == "data greater or equal than the upper bound"){
+        if(input$todown_data_bound == "segments greater or equal than the upper bound"){
           mat_fil <- mat[which(vec>=input$Ssup),]
-        }else if(input$todown_data_bound == "data lower or equal than the lower bound"){
+        }else if(input$todown_data_bound == "segments lower or equal than the lower bound"){
           mat_fil <- mat[which(vec<=input$Sinf),]
         }else{
           mat_int <- mat[which(vec<input$Ssup),]
@@ -299,9 +305,9 @@ mod_heatmap_analysis_server <- function(id,r=r){
           mat_fil <- mat_int[which(vec_int>input$Sinf),]
         }
       }else{
-        if(input$todown_data_bound == "data greater or equal than the upper bound"){
+        if(input$todown_data_bound == "segments greater or equal than the upper bound"){
           mat_fil <- mat[,which(vec>=input$Ssup)]
-        }else if(input$todown_data_bound == "data lower or equal than the lower bound"){
+        }else if(input$todown_data_bound == "segments lower or equal than the lower bound"){
           mat_fil <- mat[,which(vec<=input$Sinf)]
         }else{
           mat_int <- mat[,which(vec<input$Ssup)]
@@ -389,7 +395,7 @@ mod_heatmap_analysis_server <- function(id,r=r){
     ###Fait vecteur pour l'annotation soit les groupes soit les seuils
     vgroup <- reactive({
       vMean <- vmean()
-      if(input$methodshowsplit == "bound"){
+      if(input$methodshowsplit == "only two colors. One for ordered segments, another for disordered segments."){
         vGroup <- character(length = length(vecAnaly()))
         for(l in levels(fsplit())){
           if(vMean[l] >=input$Ssup){
@@ -428,10 +434,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
         for(j in VmA){vGroup[which(vGroup[]==j)]<-j+vrep[j]}
         pal = circlize::colorRamp2(as.integer(levels(as.factor(vGroup))),grDevices::rainbow(n = nlevels(as.factor(vGroup))))
       } else{
-        pal = c("sup"= "green", "inf" = "red") ##paramètre couleur
+        pal = c("sup"= "green", "inf" = "red") ##parametre couleur
       }
       #definition de l'annotation des clusters des lignes et permet d'afficher la valeur de l'analyse de la ligne
-      RowAN <- rowAnnotation(Cluster = anno_simple(vGroup, na_col=input$bg_color, col = pal),
+      RowAN <- rowAnnotation(segment = anno_simple(vGroup, na_col=input$bg_color, col = pal),
                              foo = anno_points(vecAnaly(), gp = gpar(col = ifelse(vecAnaly() >=input$Ssup,"chocolate1",
                                                                                    ifelse(vecAnaly()<=input$Sinf,"turquoise1",aff_color()))),
                                                size=unit(1,"mm"),axis_param = list(gp = gpar(col=aff_color())),),
@@ -450,10 +456,10 @@ mod_heatmap_analysis_server <- function(id,r=r){
         for(j in VmA){vGroup[which(vGroup[]==j)]<-j+vrep[j]}
         pal = circlize::colorRamp2(as.integer(levels(as.factor(vGroup))),grDevices::rainbow(n = nlevels(as.factor(vGroup))))
       } else{
-        pal = c("sup"= "green", "inf" = "red") ##paramètre couleur
+        pal = c("sup"= "green", "inf" = "red") ##parametre couleur
       }
       #definition de l'annotation des clusters des lignes et permet d'afficher la valeur de l'analyse de la ligne
-      ColumnAN <- HeatmapAnnotation(Cluster = anno_simple(vGroup, na_col=input$bg_color, col = pal),
+      ColumnAN <- HeatmapAnnotation(segment = anno_simple(vGroup, na_col=input$bg_color, col = pal),
                              foo = anno_points(vecAnaly(), gp = gpar(col = ifelse(vecAnaly() >=input$Ssup,"chocolate1",
                                                                                   ifelse(vecAnaly()<=input$Sinf,"turquoise1",aff_color()))),
                                                size=unit(1,"mm"),axis_param = list(gp = gpar(col=aff_color())),),

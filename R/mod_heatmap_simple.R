@@ -18,7 +18,7 @@ mod_heatmap_simple_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidPage(
-      box(title = "Settings", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+      box(title = "Display settings (Heatmap graphical parameters)", status = "primary", solidHeader = TRUE, collapsible = TRUE,
           helpText(h3("Show Dendrogram")),
           column(3,
                  radioButtons(ns("Dend_row"), "Row",
@@ -43,14 +43,14 @@ mod_heatmap_simple_ui <- function(id){
             tabPanel("Binary",)
             ),
           selectInput(ns("bg_color"),"Background color",c("white","black"),selected="black"),
-          textInput(ns("legend_name"),"Enter a legend name",value = "Heatmap"),
+          textInput(ns("legend_name"),"Enter legend name",value = "value"),
           column(6,
                  numericInput(ns("heatmap_fontsize_col"), "Column fontsize", value = 4, min = 0, max = 100, step = 0.1),
           ),
           column(6,
                  numericInput(ns("heatmap_fontsize_row"), "Row fontsize", value = 4, min = 0, max = 100, step = 0.1),
           ),
-          actionButton(ns("val_a1"), "valider"),
+          actionButton(ns("val_a1"), "Validate"),
           width=12
       ),
       box(title = "Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,

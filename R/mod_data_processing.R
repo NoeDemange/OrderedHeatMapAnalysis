@@ -17,23 +17,32 @@ mod_data_processing_ui <- function(id){
     useShinyFeedback(),
     fluidPage(
       box(title = "Data Processing",status = "primary",solidHeader = TRUE,
-          helpText("choose your parameters"),
-          helpText(h3("Data type")),
-          radioButtons(ns("typ_data"),"Type",choices = c( #Ajouter des informations d'aides explications
+          helpText(h4("choose your parameters")),
+          helpText(h3("Input matrix processing")),
+          radioButtons(ns("typ_data"),"Data type",choices = c( #Ajouter des informations d'aides explications
             "Binary",
             "Numerical"),
             selected = "Binary",inline = TRUE),
-          radioButtons(ns("trans"),"Transposition",
+          radioButtons(ns("trans"),"Matrix transposition",
                        choiceNames = c("Yes","No"),
                        choiceValues = c(TRUE,FALSE),
                        selected = FALSE,inline = TRUE),
-#Ajout mise à jour pour afficher choix pour donner binaire ou donner numérique, voir mastering shiny 10.2.1 Conditional UI
+          tags$div(
+            "Input matrix :"
+          ),
+          textOutput(ns("nbRowCol")),
+          textOutput(ns("headRow")),
+          textOutput(ns("headCol")),
+
+#Ajout mise a jour pour afficher choix pour donner binaire ou donner numerique, voir mastering shiny 10.2.1 Conditional UI
 #Tabs pour afficher mode binary ou mode numerical
           parameter_tabs <- tabsetPanel(
             id = ns("params"),
             type = "hidden",
             tabPanel("Binary",
-                     helpText(h3("Remove non-informative lines or columns")),
+                     helpText(h3("remove lines/columns"),
+                          h4("default : 'only 0' and 'only 1'  lines removed. Recommended for most subsequent distance calculation and statistical analysis methods)")
+                          ),
                      column(6,
                             numericInput(ns("max_zero_row"), "Maximum number of zero by row", value = 10, min = 0),
                             numericInput(ns("max_one_row"), "Maximum number of one by row", value = 10, min = 0),
@@ -78,8 +87,8 @@ mod_data_processing_ui <- function(id){
                                                             "median","centroid","diana"),
                     selected = "ward.D2"),
         helpText(h3("Seriation")),
-        radioButtons(ns('ser'),"Seriation", choices = c("Oui","Non"), selected="Oui", inline = TRUE),
-        actionButton(ns("val_DP"), "valider"),
+        radioButtons(ns('ser'),"Seriation (row and/or column optimized ordering)", choices = c("Yes","No"), selected="Yes", inline = TRUE),
+        actionButton(ns("val_DP"), "Validate"),
         width = 12
       )
     )
@@ -111,6 +120,10 @@ mod_data_processing_server <- function(id, r=r){
       updateNumericInput(inputId = "max_zero_row", max = ncol(data_tr()), min = 0, value = ncol(data_tr())-1)
       updateNumericInput(inputId = "max_one_row", max = ncol(data_tr()), min = 0, value = ncol(data_tr())-1)
     })
+
+    output$nbRowCol <- renderText({paste("nb row :", nrow(data_tr()), "   nb col :", ncol(data_tr()))})
+    output$headRow <- renderText({paste("Row names :", toString(paste(rownames(head(data_tr()))),width = 27))})
+    output$headCol <- renderText({paste("Col names :", toString(paste(colnames(head(data_tr()))),width = 27))})
 
     #mettre les donnees apres filtrage, filtrage en fonction binaire ou non
     r$fil_df <- eventReactive(input$val_DP,{
@@ -220,7 +233,7 @@ mod_data_processing_server <- function(id, r=r){
       tryCatch({
         req(r$HCNotPer_l)
         HC <- r$HCNotPer_l()
-        if(input$ser=="Oui"){
+        if(input$ser=="Yes"){
           OrdSer <- DendSer::DendSer(HC, r$distm_ml(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
           HC <-  seriation::permute(HC, OrdSer)
         }
@@ -255,7 +268,7 @@ mod_data_processing_server <- function(id, r=r){
       tryCatch({
         req(r$HCNotPer_c)
         HC <- r$HCNotPer_c()
-        if(input$ser=="Oui"){
+        if(input$ser=="Yes"){
           OrdSer <- DendSer::DendSer(HC, r$distm_mc(), cost= costARc) #calcul de la seriation avec DendSer du package DendSer
           HC <-  seriation::permute(HC, OrdSer)
         }

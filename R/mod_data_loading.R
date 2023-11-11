@@ -16,19 +16,22 @@ mod_data_loading_ui <- function(id) {
     useShinyFeedback(),
     fluidPage(
       box(title = "Data",status = "primary",solidHeader = TRUE,
+          footer = tags$div(
+            "* demo dataset from :  Martin Romei, Guillaume Sapriel, Pierre Imbert, Th\u00e9o Jamay, Jacques Chomilier, Guillaume Lecointre, Mathilde Carpentier, Protein folds as synapomorphies of the tree of life, Evolution, Volume 76, Issue 8, 1 August 2022, Pages 1706-1719, ",
+            tags$a(href="https://doi.org/10.1111/evo.14550", "https://doi.org/10.1111/evo.14550", target="_blank"),
+          ),
           helpText(
-            "Choisissez si vous voulez utiliser le dataset demo ou importer votre dataset (format .csv avce Header et nom des lignes en premiere colonne).
-            Puis appuyez sur valider"
+            h4("Choose your dataset (csv formatted. Names of samples/observations and variables/features on first column and row respectively). Validate, and go to data processing.")
           ),
           radioButtons(ns("data"),"",choices = c(
-            "demo (Folds/Species)",
+            "demo (Folds/Species)*",
             "Your Dataset (.csv)"),
-            selected = "demo (Folds/Species)",inline = TRUE),
+            selected = "demo (Folds/Species)*",inline = TRUE),
           br(),
           fileInput(ns("file"), "Import", accept = c(".csv", ".rds")),
           radioButtons(ns("sep"),"csv separator",choices = c(Comma = ",",Semicolon = ";",Tab = "\t"),
                        selected = ","),
-          actionButton(ns("val"), "valider"),
+          actionButton(ns("val"), "Validate"),
           width = 12
       )
     )
@@ -44,7 +47,7 @@ mod_data_loading_server <- function(id,r=r) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     r$df <- eventReactive(input$val,{
-      if(input$data == "demo (Folds/Species)"){
+      if(input$data == "demo (Folds/Species)*"){
         datf <- OrderedHeatMapAnalysis::my_dataset
         return(datf)
       }else if(input$data == "Your Dataset (.csv)"){
@@ -66,7 +69,7 @@ mod_data_loading_server <- function(id,r=r) {
                          session = shiny::getDefaultReactiveDomain())
           })
         }else{
-          stop("Ce n'est pas un .csv")
+          stop("This is not a .csv")
         }
       }
     })

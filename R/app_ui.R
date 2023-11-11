@@ -16,14 +16,14 @@ app_ui <- function(request) {
                         dashboardSidebar(
                           sidebarMenu(
                             menuItem("Introduction", tabName = "introduction", icon = icon("fas fa-home")),
-                            menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
+                            menuItem("Dataset Import", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
                             menuItem("Data Processing", tabName = "tdon", icon = icon("fas fa-table")),
-                            menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
-                            menuItem("Data Analysis Heatmap", tabName = "ht_analysis", icon = icon("fas fa-tasks")),
-                            menuItem("Splitted Heatmap", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
-                            menuItem("Interactive Heatmap", tabName = "ht_inter", icon = icon("fas fa-magnifying-glass-chart")),
+                            menuItem("Heatmap Ordering", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
+                            menuItem("Heatmap Ordering Index Analysis", tabName = "ht_analysis", icon = icon("fas fa-tasks")),
+                            menuItem("Heatmap Partitioning", tabName = "ht_split", icon = icon("fas fa-bar-chart")),
+                            menuItem("Interactive Submatrix selection", tabName = "ht_inter", icon = icon("fas fa-magnifying-glass-chart")),
                             menuItem("Information", tabName = "information", icon = icon("fas fa-info-circle")),
-                            style = "font-size:18px"
+                            style = "font-size:14px"
                           )
                         ),
                         dashboardBody(
@@ -49,13 +49,10 @@ app_ui <- function(request) {
                               ),
                               tabItem(tabName= "ht_inter",
                                       box(title = "Interactive Heatmap", status = "primary", solidHeader = TRUE, collapsible = FALSE,
-                                          selectInput("interHT_typ","With which type of Heatmap do you want to interact",c("Heatmap","Splitted Heatmap", "Data Analysis Heatmap"),selected="Heatmap"),
-                                          helpText(
-                                            "Remember to set the background color to white for best results"
-                                          ),
-                                          actionButton("val_interht", "valider"),
+                                          selectInput("interHT_typ","With which type of Heatmap do you want to interact",c("Heatmap Ordering", "Heatmap Ordering Index Analysis", "Heatmap Partitioning"),selected="Heatmap Ordering"),
+                                          textOutput("inf_white"),
+                                          actionButton("val_interht", "Validate"),
                                           InteractiveComplexHeatmapOutput("HT_interactive"),
-                                          #downloadButton(ns("down"), label = "Download the plot", style="color:#000000; display: block"),
                                           width=12
                                       ),
                                       tags$style("
