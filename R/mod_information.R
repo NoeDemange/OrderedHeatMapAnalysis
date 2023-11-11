@@ -11,13 +11,15 @@ mod_information_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidPage(
-      tags$div(br(),
-               "Developed by Noe Demange and Guillaume Sapriel",
-               br(),
-               "Contact the maintainer of the app, Guillaume Sapriel: ", icon("envelope"), tags$b("guillaume.sapriel@uvsq.fr"),
-               br(),br(),
-               "We are grateful to the INRAE MIGALE bioinformatics facility (MIGALE, INRAE, 2020. Migale bioinformatics Facility, doi: 10.15454/1.5572390655343293E12) for providing help and storage resources."
-      )
+      box(title = "Information", status = "info", solidHeader = TRUE, collapsible = FALSE, width = 12,
+          tags$div(
+                   "Developed by Noe Demange and Guillaume Sapriel",
+                   br(),
+                   "Contact the maintainer of the app, Guillaume Sapriel: ", icon("envelope"), tags$b("guillaume.sapriel@uvsq.fr"),
+                   br(),br(),
+                   "We are grateful to the INRAE MIGALE bioinformatics facility (MIGALE, INRAE, 2020. Migale bioinformatics Facility, doi: 10.15454/1.5572390655343293E12) for providing help and storage resources."
+          )
+        ),
     )
   )
 }

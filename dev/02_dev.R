@@ -42,6 +42,7 @@ usethis::use_package("InteractiveComplexHeatmap")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
+golem::add_module(name = "introduction", with_test = FALSE)
 golem::add_module(name = "data_loading", with_test = FALSE) # Name of the module
 golem::add_module(name = "data_processing", with_test = FALSE) # Name of the module
 golem::add_module(name = "heatmap_simple", with_test = FALSE) # Name of the module

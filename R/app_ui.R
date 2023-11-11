@@ -15,6 +15,7 @@ app_ui <- function(request) {
                         dashboardHeader(title = "OHMA"),
                         dashboardSidebar(
                           sidebarMenu(
+                            menuItem("Introduction", tabName = "introduction", icon = icon("fas fa-home")),
                             menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
                             menuItem("Data Processing", tabName = "tdon", icon = icon("fas fa-table")),
                             menuItem("Heatmap", tabName = "ht_simp", icon = icon("fas fa-chess-board")),
@@ -28,6 +29,9 @@ app_ui <- function(request) {
                         dashboardBody(
                           fluidRow(
                             tabItems(
+                              tabItem(tabName="introduction",
+                                      mod_introduction_ui("introduction_1")
+                              ),
                               tabItem(tabName="dataset",
                                      mod_data_loading_ui("data_loading_1")
                               ),
