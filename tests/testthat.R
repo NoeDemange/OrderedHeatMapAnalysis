@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(biseriatedheatmaps)
+library(OrderedHeatMapAnalysis)
 
-test_check("biseriatedheatmaps")
+test_check("OrderedHeatMapAnalysis")

@@ -45,7 +45,7 @@ mod_data_loading_server <- function(id,r=r) {
     ns <- session$ns
     r$df <- eventReactive(input$val,{
       if(input$data == "demo (Folds/Species)"){
-        datf <- biseriatedheatmaps::my_dataset
+        datf <- OrderedHeatMapAnalysis::my_dataset
         return(datf)
       }else if(input$data == "Your Dataset (.csv)"){
         req(input$file)

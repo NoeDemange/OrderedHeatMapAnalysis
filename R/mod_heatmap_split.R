@@ -14,7 +14,7 @@
 #' @importFrom circlize colorRamp2
 #' @importFrom grDevices rainbow
 #' @importFrom ecp e.divisive
-#' @useDynLib biseriatedheatmaps, .registration = TRUE
+#' @useDynLib OrderedHeatMapAnalysis, .registration = TRUE
 #' @importFrom shiny NS tagList
 mod_heatmap_split_ui <- function(id){
   ns <- NS(id)

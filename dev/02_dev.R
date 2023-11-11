@@ -72,7 +72,7 @@ usethis::use_test("app")
 # Documentation
 
 ## Vignette ----
-usethis::use_vignette("biseriatedheatmaps")
+usethis::use_vignette("OrderedHeatMapAnalysis")
 devtools::build_vignettes()
 
 ## Code Coverage----

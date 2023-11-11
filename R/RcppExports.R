@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 cppARorder <- function(mat) {
-    .Call(`_biseriatedheatmaps_cppARorder`, mat)
+    .Call(`_OrderedHeatMapAnalysis_cppARorder`, mat)
 }
 
 cppcorrNeighbor <- function(mat) {
-    .Call(`_biseriatedheatmaps_cppcorrNeighbor`, mat)
+    .Call(`_OrderedHeatMapAnalysis_cppcorrNeighbor`, mat)
 }
 
 cth_numgroup <- function(cvo) {
-    .Call(`_biseriatedheatmaps_cth_numgroup`, cvo)
+    .Call(`_OrderedHeatMapAnalysis_cth_numgroup`, cvo)
 }
 
 cpprunstest <- function(mat, alternative) {
-    .Call(`_biseriatedheatmaps_cpprunstest`, mat, alternative)
+    .Call(`_OrderedHeatMapAnalysis_cpprunstest`, mat, alternative)
 }
 

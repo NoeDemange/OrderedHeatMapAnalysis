@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // cppARorder
 NumericVector cppARorder(NumericMatrix mat);
-RcppExport SEXP _biseriatedheatmaps_cppARorder(SEXP matSEXP) {
+RcppExport SEXP _OrderedHeatMapAnalysis_cppARorder(SEXP matSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,7 +23,7 @@ END_RCPP
 }
 // cppcorrNeighbor
 NumericVector cppcorrNeighbor(NumericMatrix mat);
-RcppExport SEXP _biseriatedheatmaps_cppcorrNeighbor(SEXP matSEXP) {
+RcppExport SEXP _OrderedHeatMapAnalysis_cppcorrNeighbor(SEXP matSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,7 +34,7 @@ END_RCPP
 }
 // cth_numgroup
 NumericVector cth_numgroup(NumericVector cvo);
-RcppExport SEXP _biseriatedheatmaps_cth_numgroup(SEXP cvoSEXP) {
+RcppExport SEXP _OrderedHeatMapAnalysis_cth_numgroup(SEXP cvoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -45,7 +45,7 @@ END_RCPP
 }
 // cpprunstest
 NumericVector cpprunstest(NumericMatrix mat, std::string alternative);
-RcppExport SEXP _biseriatedheatmaps_cpprunstest(SEXP matSEXP, SEXP alternativeSEXP) {
+RcppExport SEXP _OrderedHeatMapAnalysis_cpprunstest(SEXP matSEXP, SEXP alternativeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -57,14 +57,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_biseriatedheatmaps_cppARorder", (DL_FUNC) &_biseriatedheatmaps_cppARorder, 1},
-    {"_biseriatedheatmaps_cppcorrNeighbor", (DL_FUNC) &_biseriatedheatmaps_cppcorrNeighbor, 1},
-    {"_biseriatedheatmaps_cth_numgroup", (DL_FUNC) &_biseriatedheatmaps_cth_numgroup, 1},
-    {"_biseriatedheatmaps_cpprunstest", (DL_FUNC) &_biseriatedheatmaps_cpprunstest, 2},
+    {"_OrderedHeatMapAnalysis_cppARorder", (DL_FUNC) &_OrderedHeatMapAnalysis_cppARorder, 1},
+    {"_OrderedHeatMapAnalysis_cppcorrNeighbor", (DL_FUNC) &_OrderedHeatMapAnalysis_cppcorrNeighbor, 1},
+    {"_OrderedHeatMapAnalysis_cth_numgroup", (DL_FUNC) &_OrderedHeatMapAnalysis_cth_numgroup, 1},
+    {"_OrderedHeatMapAnalysis_cpprunstest", (DL_FUNC) &_OrderedHeatMapAnalysis_cpprunstest, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_biseriatedheatmaps(DllInfo *dll) {
+RcppExport void R_init_OrderedHeatMapAnalysis(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

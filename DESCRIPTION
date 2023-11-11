@@ -1,4 +1,4 @@
-Package: biseriatedheatmaps
+Package: OrderedHeatMapAnalysis
 Title: BSH
 Version: 0.0.0.9000
 Authors@R: 
@@ -6,8 +6,8 @@ Authors@R:
 Description: Optimised direct visualization and analysis of matrix data
     structure.
 License: MIT + file LICENSE
-URL: https://github.com/NoeDemange/biseriatedheatmaps
-BugReports: https://github.com/NoeDemange/biseriatedheatmaps/issues
+URL: https://github.com/NoeDemange/OrderedHeatMapAnalysis
+BugReports: https://github.com/NoeDemange/OrderedHeatMapAnalysis/issues
 Depends: 
     R (>= 2.10)
 Imports: 

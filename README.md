@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# biseriatedheatmaps
+# OrderedHeatMapAnalysis
 
 <!-- badges: start -->
 
@@ -13,12 +13,12 @@ Optimised direct visualization and analysis of matrix data structure.
 
 ## Installation
 
-You can install the development version of biseriatedheatmaps from
+You can install the development version of OrderedHeatMapAnalysis from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("NoeDemange/biseriatedheatmaps")
+devtools::install_github("NoeDemange/OrderedHeatMapAnalysis")
 ```
 
 ## Example
@@ -26,8 +26,8 @@ devtools::install_github("NoeDemange/biseriatedheatmaps")
 This is a basic example which shows you how to run the app:
 
 ``` r
-library("biseriatedheatmaps")
-biseriatedheatmaps::run_app(options=list("launch.browser"=TRUE))
+library("OrderedHeatMapAnalysis")
+OrderedHeatMapAnalysis::run_app(options=list("launch.browser"=TRUE))
 ```
 
 ## Credits

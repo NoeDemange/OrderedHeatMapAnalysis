@@ -19,13 +19,13 @@
 ## to change the name in the app_sys() function in app_config.R /!\
 ##
 golem::fill_desc(
-  pkg_name = "biseriatedheatmaps", # The Name of the package containing the App
+  pkg_name = "OrderedHeatMapAnalysis", # The Name of the package containing the App
   pkg_title = "BSH", # The Title of the package containing the App
   pkg_description = "Optimised direct visualization and analysis of matrix data structure.", # The Description of the package containing the App
   author_first_name = "Noe", # Your First Name
   author_last_name = "Demange", # Your Last Name
   author_email = "demange.noe@outlook.fr", # Your Email
-  repo_url = "https://github.com/NoeDemange/biseriatedheatmaps" # The URL of the GitHub Repo (optional)
+  repo_url = "https://github.com/NoeDemange/OrderedHeatMapAnalysis" # The URL of the GitHub Repo (optional)
 )
 
 ## Set {golem} options ----

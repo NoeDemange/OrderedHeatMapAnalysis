@@ -12,7 +12,7 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     ui <- shinydashboard::dashboardPage(skin = "purple",
-                        dashboardHeader(title = "BSH"),
+                        dashboardHeader(title = "OHMA"),
                         dashboardSidebar(
                           sidebarMenu(
                             menuItem("Dataset", tabName = "dataset", icon = icon("fas fa-file-arrow-down")),
@@ -93,7 +93,7 @@ golem_add_external_resources <- function() {
     favicon(ext="png"),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "biseriatedheatmaps"
+      app_title = "OrderedHeatMapAnalysis"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
