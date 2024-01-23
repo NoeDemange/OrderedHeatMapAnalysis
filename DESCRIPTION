@@ -1,8 +1,10 @@
 Package: OrderedHeatMapAnalysis
 Title: OHMA
 Version: 0.0.0.9000
-Authors@R: person('Noe', 'Demange', email = 'demange.noe@outlook.fr', role = c('cre', 'aut'))
-Description: Optimised direct visualization and analysis of matrix data structure.
+Authors@R: 
+    person("Noe", "Demange", , "demange.noe@outlook.fr", role = c("cre", "aut"))
+Description: Optimised direct visualization and analysis of matrix data
+    structure.
 License: MIT + file LICENSE
 URL: https://github.com/NoeDemange/OrderedHeatMapAnalysis
 BugReports: https://github.com/NoeDemange/OrderedHeatMapAnalysis/issues

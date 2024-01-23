@@ -119,7 +119,8 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- r$fil_df()
         mat <- mat[seriation::get_order(r$HC_l()),]
         dend <- stats::as.dendrogram(r$HCNotPer_c())
-        dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_c())
+        dend <- rotate(dend,labels(r$HC_c()))
+        #dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_c())
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                  cluster_rows = FALSE,
                                                  cluster_columns = dend,
@@ -136,7 +137,8 @@ mod_heatmap_simple_server <- function(id, r=r){
         mat <- r$fil_df()
         mat <- mat[, seriation::get_order(r$HC_c())]
         dend <- stats::as.dendrogram(r$HCNotPer_l())
-        dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_l())
+        dend <- rotate(dend,labels(r$HC_l()))
+        #dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_l())
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                  cluster_rows = dend,
                                                  row_dend_gp = gpar(col = aff_color()),
@@ -151,9 +153,11 @@ mod_heatmap_simple_server <- function(id, r=r){
         )
       }else{
         dend_l <- stats::as.dendrogram(r$HCNotPer_l())
-        dendextend::order.dendrogram(dend_l) <- seriation::get_order(r$HC_l())
+        dend_l <- rotate(dend_l,labels(r$HC_l()))
+       # dendextend::order.dendrogram(dend_l) <- seriation::get_order(r$HC_l())
         dend_c <- stats::as.dendrogram(r$HCNotPer_c())
-        dendextend::order.dendrogram(dend_c) <- seriation::get_order(r$HC_c())
+        dend_c <- rotate(dend_c,labels(r$HC_c()))
+        #dendextend::order.dendrogram(dend_c) <- seriation::get_order(r$HC_c())
         Heatmapsimple <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
                                                cluster_rows = dend_l,
                                                row_dend_gp = gpar(col = aff_color()),

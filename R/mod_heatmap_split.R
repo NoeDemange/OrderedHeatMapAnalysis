@@ -197,7 +197,8 @@ mod_heatmap_split_server <- function(id, r=r){
           mat <- r$fil_df()
           mat <- mat[seriation::get_order(r$HC_l()),]
           dend <- stats::as.dendrogram(r$HCNotPer_c())
-          dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_c())
+          dend <- rotate(dend,labels(r$HC_c()))
+          #dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_c())
           dend <- color_branches(dend, k = input$Kcol)
           Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                    cluster_rows = FALSE,
@@ -217,7 +218,8 @@ mod_heatmap_split_server <- function(id, r=r){
           mat <- r$fil_df()
           mat <- mat[, seriation::get_order(r$HC_c())]
           dend <- stats::as.dendrogram(r$HCNotPer_l())
-          dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_l())
+          dend <- rotate(dend,labels(r$HC_l()))
+          #dendextend::order.dendrogram(dend) <- seriation::get_order(r$HC_l())
           dend <- color_branches(dend, k = input$Krow)
           Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(mat), name = input$legend_name,
                                                    cluster_rows = dend,
@@ -235,10 +237,12 @@ mod_heatmap_split_server <- function(id, r=r){
           )
         }else{
           dend_row <- stats::as.dendrogram(r$HCNotPer_l())
-          dendextend::order.dendrogram(dend_row) <- seriation::get_order(r$HC_l())
+          dend_row <- rotate(dend_row,labels(r$HC_l()))
+         # dendextend::order.dendrogram(dend_row) <- seriation::get_order(r$HC_l())
           dend_row <- color_branches(dend_row, k = input$Krow)
           dend_col <- stats::as.dendrogram(r$HCNotPer_c())
-          dendextend::order.dendrogram(dend_col) <- seriation::get_order(r$HC_c())
+          dend_col <- rotate(dend_col,labels(r$HC_c()))
+          #dendextend::order.dendrogram(dend_col) <- seriation::get_order(r$HC_c())
           dend_col <- color_branches(dend_col, k = input$Kcol)
           Heatmapsplit <- ComplexHeatmap::Heatmap(as.matrix(r$fil_df()), name = input$legend_name,
                                                    cluster_rows = dend_row,
