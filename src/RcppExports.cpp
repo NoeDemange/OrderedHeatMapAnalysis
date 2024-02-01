@@ -43,6 +43,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cth_numgroupZeroAlone
+NumericVector cth_numgroupZeroAlone(NumericVector cvo);
+RcppExport SEXP _OrderedHeatMapAnalysis_cth_numgroupZeroAlone(SEXP cvoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type cvo(cvoSEXP);
+    rcpp_result_gen = Rcpp::wrap(cth_numgroupZeroAlone(cvo));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpprunstest
 NumericVector cpprunstest(NumericMatrix mat, std::string alternative);
 RcppExport SEXP _OrderedHeatMapAnalysis_cpprunstest(SEXP matSEXP, SEXP alternativeSEXP) {
@@ -60,6 +71,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_OrderedHeatMapAnalysis_cppARorder", (DL_FUNC) &_OrderedHeatMapAnalysis_cppARorder, 1},
     {"_OrderedHeatMapAnalysis_cppcorrNeighbor", (DL_FUNC) &_OrderedHeatMapAnalysis_cppcorrNeighbor, 1},
     {"_OrderedHeatMapAnalysis_cth_numgroup", (DL_FUNC) &_OrderedHeatMapAnalysis_cth_numgroup, 1},
+    {"_OrderedHeatMapAnalysis_cth_numgroupZeroAlone", (DL_FUNC) &_OrderedHeatMapAnalysis_cth_numgroupZeroAlone, 1},
     {"_OrderedHeatMapAnalysis_cpprunstest", (DL_FUNC) &_OrderedHeatMapAnalysis_cpprunstest, 2},
     {NULL, NULL, 0}
 };

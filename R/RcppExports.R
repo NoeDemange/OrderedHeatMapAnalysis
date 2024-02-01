@@ -13,6 +13,10 @@ cth_numgroup <- function(cvo) {
     .Call(`_OrderedHeatMapAnalysis_cth_numgroup`, cvo)
 }
 
+cth_numgroupZeroAlone <- function(cvo) {
+    .Call(`_OrderedHeatMapAnalysis_cth_numgroupZeroAlone`, cvo)
+}
+
 cpprunstest <- function(mat, alternative) {
     .Call(`_OrderedHeatMapAnalysis_cpprunstest`, mat, alternative)
 }

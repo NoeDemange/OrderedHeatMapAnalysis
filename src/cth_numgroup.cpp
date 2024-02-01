@@ -4,7 +4,6 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 NumericVector cth_numgroup(NumericVector cvo) {
   //Fonction qui permet de numeroter dans l'ordre croissant
-  //un vecteur et de laisser 0 quand le vecteur initial vaut 0
   int nb = 1;
   NumericVector cvod(cvo.length()); //creation d'un vecteur de meme longueur que le vecteur cvo
   cvod[0] = nb;

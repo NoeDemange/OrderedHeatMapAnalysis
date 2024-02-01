@@ -275,7 +275,10 @@ mod_heatmap_split_server <- function(id, r=r){
           cth <- dynamicTreeCut::cutreeHybrid(r$HC_l(), as.matrix(r$distm_ml()),
                                               minClusterSize = input$minsize_row, deepSplit = input$ds_row,
                                               verbose = 0)$labels
-        }
+          cth <- cth[get_order(r$HC_l())]
+          cth <- cth_numgroupZeroAlone(cth)
+          return(cth)
+          }
       }
       else{
         cth <- ecp::e.divisive(as.matrix(r$M_ser()), min.size=input$ecp_minsize_row,
@@ -316,7 +319,10 @@ mod_heatmap_split_server <- function(id, r=r){
           cth <- dynamicTreeCut::cutreeHybrid(r$HC_c(), as.matrix(r$distm_mc()),
                                               minClusterSize = input$minsize_col, deepSplit = input$ds_col,
                                               verbose = 0)$labels
-        }
+          cth <- cth[get_order(r$HC_c())]
+          cth <- cth_numgroupZeroAlone(cth)
+          return(cth)
+          }
       }else{
         cth <- ecp::e.divisive(t(as.matrix(r$M_ser())), min.size=input$ecp_minsize_col,
                                sig.lvl=input$siglvl_col)$cluster
